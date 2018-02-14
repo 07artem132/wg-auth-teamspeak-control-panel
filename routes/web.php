@@ -15,21 +15,24 @@ Route::get( '/', function () {
 	return view( 'welcome' );
 } );
 
-Route::get( '/teamspeak/verify/{id}/wg', [
-	'uses' => 'TeamSpeakUserAuth@RegistrationWgVerify',
+Route::post( '/user/verify', [
+	'uses' => 'TeamSpeakUserAuth@VerifyPrivilege',
 ] );
 
-Route::get( '/teamspeak/verify/{id}', [
+Route::get( '/user/verify/{id}', [
 	'uses' => 'TeamSpeakUserAuth@Registration',
 ] );
 
-Route::post( '/teamspeak/verify', [
-	'uses' => 'TeamSpeakUserAuth@RegisterPendingVerify',
+Route::get( '/user/verify/{id}/wg', [
+	'uses' => 'TeamSpeakUserAuth@RegistrationWgVerify',
 ] );
 
 Route::get( '/teamspeak/worker/config', [
 	'uses' => 'TeamSpeakWorker@GetConfig',
 ] );
+
+
+
 
 ////////////////////////////////////////////////
 Route::get( '/teamspeak/{id}/server/add', [

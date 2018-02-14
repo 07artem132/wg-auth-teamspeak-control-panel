@@ -33,8 +33,9 @@ class server extends Model {
 	}
 
 	function clans() {
-		return $this->hasMany( 'App\ServerClan', 'server_id', 'id' );
+		return $this->hasMany( 'App\ServerClanPostSgid', 'server_id', 'id' );
 	}
+
 	function modules(){
 		return $this->hasMany( 'App\ServerModule', 'server_id', 'id' );
 	}

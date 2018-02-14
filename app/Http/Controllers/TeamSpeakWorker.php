@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Instanse;
 use App\server;
 
 class TeamSpeakWorker extends Controller {
@@ -23,6 +22,7 @@ class TeamSpeakWorker extends Controller {
 				}
 			}
 		}
-		echo json_encode( $Config );
+
+		return response()->json( $Config );
 	}
 }

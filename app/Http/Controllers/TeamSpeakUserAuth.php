@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InvalidJSON;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use App\server;
-use App\Services\WargamingAPI;
-use App\ServerClan;
 use App\Services\TeamSpeak;
 use App\ServerClanPostSgid;
 use App\Services\TeamSpeakWgAuth;
@@ -19,14 +18,18 @@ class TeamSpeakUserAuth extends Controller {
 	use JsonDecodeAndValidate;
 
 	function RegistrationWgVerify( Request $request, $id ) {
-		/**
-		 * $TsVerifyInfo->client_uid
-		 * $TsVerifyInfo->server_uid
-		 */
-		$TsVerifyInfo = $this->JsonDecodeAndValidate( Redis::get( 'PendingVerify:' . $id ) );
+		$TeamSpeakWgAuth = new TeamSpeakWgAuth();
 
-		$WargamingAPI = new TeamSpeakWgAuth();
-		$WgUserInfo   = $WargamingAPI->prolongateToken( $request->input( 'access_token' ) );
+		try {
+			$TsVerifyInfo = $this->JsonDecodeAndValidate( $TeamSpeakWgAuth->GetVerifyDataByID( $id ) );
+		} catch ( InvalidJSON $e ) {
+			return response( 'Вероятно ссылка устарела...', 200 );
+		}
+		if ( $request->input( 'status' ) != 'ok' ) {
+			return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
+		}
+
+		$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
 
 		try {
 			$WgAccounts = WgAccount::account_id( $WgUserInfo->account_id )->firstOrFail();
@@ -46,88 +49,93 @@ class TeamSpeakUserAuth extends Controller {
 		$TeamSpeakServer = server::uid( $TsVerifyInfo->server_uid )->firstOrFail();
 
 		foreach ( $TeamSpeakServer->clans as $clan ) {
-			$ClanInfo = $WargamingAPI->clanInfo( $clan->clan_id );
-			if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$WgUserInfo->account_id}->role ) ) {
+			$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
+
+			if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$TsClientWgAccount->wgAccount->account_id}->role ) ) {
 				$ts3conn = new TeamSpeak( $TeamSpeakServer->instanse->id );
 				$ts3conn->ServerUseByUID( $TsVerifyInfo->server_uid );
 
-				$ServerClanPostSgid = ServerClanPostSgid::clanID( $clan->clan_id )->firstOrFail();
-				$SGID               = $ServerClanPostSgid->{$ClanInfo->{$clan->clan_id}->members->{$WgUserInfo->account_id}->role};
-
-				if ( ! empty( $SGID ) && ! $ts3conn->ClientMemberOfServerGroupId( $TsVerifyInfo->client_uid, $SGID ) ) {
-					$ts3conn->ClientAddServerGroup( $TsVerifyInfo->client_uid, $SGID );
+				$SGID = $clan->{$ClanInfo->{$clan->clan_id}->members->{$TsClientWgAccount->wgAccount->account_id}->role};
+				if ( ! empty( $SGID ) ) {
+					if ( ! $ts3conn->ClientMemberOfServerGroupId( $TsVerifyInfo->client_uid, $SGID ) ) {
+						$ts3conn->ClientAddServerGroup( $TsVerifyInfo->client_uid, $SGID );
+					}
 				}
 
-				$SGID = $ServerClanPostSgid->clan_tag;
-
-				if ( ! empty( $SGID ) && ! $ts3conn->ClientMemberOfServerGroupId( $TsVerifyInfo->client_uid, $SGID ) ) {
-					$ts3conn->ClientAddServerGroup( $TsVerifyInfo->client_uid, $SGID );
+				$SGID = $clan->clan_tag;
+				if ( ! empty( $SGID ) ) {
+					if ( ! $ts3conn->ClientMemberOfServerGroupId( $TsVerifyInfo->client_uid, $SGID ) ) {
+						$ts3conn->ClientAddServerGroup( $TsVerifyInfo->client_uid, $SGID );
+					}
 				}
-				echo 'авторизация прошла нормально';
 
-				return;
+				return response( 'авторизация прошла нормально', 200 );
 			}
 		}
-		echo 'к сожалению вы не состоите в нужном калне';
 
-		return;
+		return response( 'к сожалению вы не состоите в нужном калне', 200 );
 	}
 
 	function Registration( $id ) {
-		/**
-		 * $TsVerifyInfo->client_uid
-		 * $TsVerifyInfo->server_uid
-		 */
-		$TsVerifyInfo = $this->JsonDecodeAndValidate( Redis::get( 'PendingVerify:' . $id ) );
-
 		$WargamingAPI = new TeamSpeakWgAuth();
 
 		try {
-			$TsClientWgAuth = TsClientWgAccount::clientUID( $TsVerifyInfo->client_uid )->firstOrFail();
-		} catch ( ModelNotFoundException $e ) {
-
-			return redirect( $WargamingAPI->genAuthUrl( env( 'APP_URL' ) . 'teamspeak/verify/' . $id . '/wg' ) );
+			$this->JsonDecodeAndValidate( $WargamingAPI->GetVerifyDataByID( $id ) );
+		} catch ( InvalidJSON $e ) {
+			return response( 'Вероятно ссылка устарела...', 200 );
 		}
 
-		$TeamSpeakServer = server::uid( $TsVerifyInfo->server_uid )->firstOrFail();
+		$url = $WargamingAPI->genAuthUrl( env( 'APP_URL' ) . 'user/verify/' . $id . '/wg' );
 
-		foreach ( $TeamSpeakServer->clans as $clan ) {
-			$ClanInfo = $WargamingAPI->clanInfo( $clan->clan_id );
-
-			if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$TsClientWgAuth->wgAccount->account_id}->role ) ) {
-				$ts3conn = new TeamSpeak( $TeamSpeakServer->instanse->id );
-				$ts3conn->ServerUseByUID( $TsVerifyInfo->server_uid );
-
-				$ServerClanPostSgid = ServerClanPostSgid::clanID( $clan->clan_id )->firstOrFail();
-				$SGID               = $ServerClanPostSgid->{$ClanInfo->{$clan->clan_id}->members->{$TsClientWgAuth->wgAccount->account_id}->role};
-
-				if ( ! empty( $SGID ) && ! $ts3conn->ClientMemberOfServerGroupId( $TsVerifyInfo->client_uid, $SGID ) ) {
-					$ts3conn->ClientAddServerGroup( $TsVerifyInfo->client_uid, $SGID );
-				}
-
-				$SGID = $ServerClanPostSgid->clan_tag;
-
-				if ( ! empty( $SGID ) && ! $ts3conn->ClientMemberOfServerGroupId( $TsVerifyInfo->client_uid, $SGID ) ) {
-					$ts3conn->ClientAddServerGroup( $TsVerifyInfo->client_uid, $SGID );
-				}
-				echo 'авторизация прошла нормально';
-
-				return;
-			}
-		}
-		echo 'к сожалению вы не состоите в нужном калне';
-
-		return;
+		return redirect( $url );
 	}
 
-	function RegisterPendingVerify( Request $request ) {
-		server::UID( $request->input( "server_uid" ) )->firstOrFail();
+	function VerifyPrivilege( Request $request ) {
+		try {
+			$server = server::UID( $request->input( "server_uid" ) )->firstOrFail();
+			foreach ( $server->modules as $module ) {
+				if ( $module->module->name == 'wg_auth_bot' ) {
+					$TeamSpeakWgAuth = new TeamSpeakWgAuth();
 
-		$VerifyID = crc32( $request->input( "client_uid" ) . $request->input( "server_uid" ) );
+					if ( ! $TeamSpeakWgAuth->ClientUidIsRegister( $request->input( "client_uid" ) ) ) {
+						$VerifyID = $TeamSpeakWgAuth->GetVerifyID( $request->all() );
 
-		Redis::set( 'PendingVerify:' . $VerifyID, json_encode( $request->all() ) );
-		Redis::expire( 'PendingVerify:' . $VerifyID, 60 * 5 );#default 5
+						return response()->json( [ 'verify' => 'AuthorizationRequired', 'verify_id' => $VerifyID ] );
+					} else {
+						$Client = TsClientWgAccount::clientUID( $request->input( "client_uid" ) )->firstOrFail();
+						foreach ( $server->clans as $clan ) {
+							$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
 
-		echo $VerifyID;
+							if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$Client->wgAccount->account_id}->role ) ) {
+								$ts3conn = new TeamSpeak( $server->instanse->id );
+								$ts3conn->ServerUseByUID( $request->input( "server_uid" ) );
+
+								$SGID = $clan->{$ClanInfo->{$clan->clan_id}->members->{$Client->wgAccount->account_id}->role};
+								if ( ! empty( $SGID ) ) {
+									if ( ! $ts3conn->ClientMemberOfServerGroupId( $request->input( "client_uid" ), $SGID ) ) {
+										$ts3conn->ClientAddServerGroup( $request->input( "client_uid" ), $SGID );
+									}
+								}
+
+								$SGID = $clan->clan_tag;
+								if ( ! empty( $SGID ) ) {
+									if ( ! $ts3conn->ClientMemberOfServerGroupId( $request->input( "client_uid" ), $SGID ) ) {
+										$ts3conn->ClientAddServerGroup( $request->input( "client_uid" ), $SGID );
+									}
+								}
+
+								return response()->json( [ 'verify' => 'successfully' ] );
+							}
+						}
+
+						return response()->json( [ 'verify' => 'ClanNotAllowedOrNoClan' ] );
+					}
+				}
+			}
+
+			return response()->json( [ 'verify' => 'ModuleIsDisabled' ] );
+		} catch ( ModelNotFoundException $e ) {
+			return response()->json( [ 'verify' => 'ServerNotFound' ] );
+		}
 	}
 }

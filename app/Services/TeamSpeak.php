@@ -28,21 +28,20 @@ class TeamSpeak {
 		$this->ts3conn = $this->ts3conn->serverGetByUid( $ServerUID );
 	}
 
-	function ClientMemberOfServerGroupId( $ClientUID, $ID ) {
-		$client = $this->ts3conn->clientGetByUid( $ClientUID );
+	function ClientMemberOfServerGroupId( $ClientUID, $SGID ) {
+		$cldbid                = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		$ServerGroupClientList = $this->ts3conn->serverGroupClientList( $SGID );
 
-		foreach ( $client->memberOf() as $group ) {
-			if ( $group instanceof TeamSpeak3_Node_Servergroup && $group->getId() === $ID ) {
-				return true;
-			}
+		if ( array_key_exists( $cldbid, $ServerGroupClientList ) ) {
+			return true;
 		}
 
 		return false;
 	}
 
-	function ClientAddServerGroup( $ClientUID, $ID ) {
-		$client = $this->ts3conn->clientGetByUid( $ClientUID );
-		$client->addServerGroup( $ID );
+	function ClientAddServerGroup( $ClientUID, $SGID ) {
+		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		$this->ts3conn->serverGroupClientAdd( $SGID, $cldbid );
 	}
 
 	function GetServerList() {

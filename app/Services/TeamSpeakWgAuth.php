@@ -10,6 +10,9 @@ namespace App\Services;
 
 use App\Services\TeamSpeak;
 use App\Services\WargamingAPI;
+use Cache;
+use App\TsClientWgAccount;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TeamSpeakWgAuth {
 
@@ -22,7 +25,12 @@ class TeamSpeakWgAuth {
 	}
 
 	function getAccountInfo( $account_id, $access_token = null ) {
-		return WargamingAPI::wot()->account->info( array( 'account_id' => $account_id ) );
+		$data = Cache::remember( "account:$account_id", 30, function () use ( $account_id ) {
+			return WargamingAPI::wot()->account->info( array( 'account_id' => $account_id ) );
+		} );
+
+		return $data;
+
 	}
 
 	function genAuthUrl( $redirect_to = '' ) {
@@ -34,6 +42,32 @@ class TeamSpeakWgAuth {
 	}
 
 	function clanInfo( $ClanID ) {
-		return WargamingAPI::wgn()->clans->info( [ 'clan_id' => $ClanID, 'members_key' => 'id' ] );
+		$data = Cache::remember( "clan:$ClanID", 30, function () use ( $ClanID ) {
+			return WargamingAPI::wgn()->clans->info( [ 'clan_id' => $ClanID, 'members_key' => 'id' ] );
+		} );
+
+		return $data;
+	}
+
+	function GetVerifyID( $VerifyInfo ) {
+		$VerifyID = crc32( $VerifyInfo["client_uid"] . $VerifyInfo["server_uid"] );
+
+		Cache::put( "PendingVerify:$VerifyID", json_encode( $VerifyInfo ), 10 );
+
+		return $VerifyID;
+	}
+
+	function GetVerifyDataByID( $VerifyID ) {
+		return Cache::get( "PendingVerify:$VerifyID" );
+	}
+
+	function ClientUidIsRegister( $uid ) {
+		try {
+			TsClientWgAccount::clientUID( $uid )->firstOrFail();
+
+			return true;
+		} catch ( ModelNotFoundException $e ) {
+			return false;
+		}
 	}
 }
