@@ -39,9 +39,20 @@ class TeamSpeak {
 		return false;
 	}
 
-	function ClientAddServerGroup( $ClientUID, $SGID ) {
+	function ClientAddServerGroup( $ClientUID, $sgid ) {
 		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
-		$this->ts3conn->serverGroupClientAdd( $SGID, $cldbid );
+		$this->ts3conn->serverGroupClientAdd( $sgid, $cldbid );
+	}
+
+	function ClientInfo( $ClientUID ) {
+		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+
+		return $this->ts3conn->clientInfoDb( $cldbid );
+	}
+
+	function ClientRemoveServerGroup( $ClientUID, $sgid ) {
+		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		$this->ts3conn->serverGroupClientDel( $sgid, $cldbid );
 	}
 
 	function GetServerList() {

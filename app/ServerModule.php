@@ -31,4 +31,13 @@ class ServerModule extends Model {
 	function options() {
 		return $this->hasMany( 'App\ServerModuleOptions', 'server_module_id', 'id' );
 	}
+
+	function scopeenable( $query ) {
+		return $query->where( 'status', '=', 'enable' );
+	}
+
+	function scopeserverID( $query, $serverID ) {
+		return $query->where( 'server_id', '=', $serverID );
+	}
+
 }

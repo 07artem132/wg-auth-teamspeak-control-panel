@@ -31,6 +31,9 @@ Route::get( '/teamspeak/worker/config', [
 	'uses' => 'TeamSpeakWorker@GetConfig',
 ] );
 
+Route::get( '/user/wn8', [
+	'uses' => 'test@wn8',
+] );
 
 
 

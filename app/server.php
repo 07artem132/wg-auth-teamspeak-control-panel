@@ -36,7 +36,20 @@ class server extends Model {
 		return $this->hasMany( 'App\ServerClanPostSgid', 'server_id', 'id' );
 	}
 
-	function modules(){
+	function wotPlayers() {
+		return $this->hasone( 'App\ServerWotPlayer', 'server_id', 'id' );
+	}
+
+	function NoValidNickname() {
+		return $this->hasone( 'App\ServerNoValidNickname', 'server_id', 'id' );
+	}
+
+	function modules() {
 		return $this->hasMany( 'App\ServerModule', 'server_id', 'id' );
 	}
+
+	function wn8() {
+		return $this->hasone( 'App\ServerWn8PostEfficiency', 'server_id', 'id' );
+	}
+
 }

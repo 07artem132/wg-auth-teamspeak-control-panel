@@ -194,8 +194,13 @@ class WargamingAPI {
 	 */
 	private static function createUrl( $name, $arguments = array() ) {
 		try {
-			$api  = self::$action . '/' . $name . '/';
-			$args = array( 'application_id' => self::$Appid );
+			$api = self::$action . '/' . $name . '/';
+
+			if ( empty( self::$Appid ) ) {
+				$args = array( 'application_id' => env( 'WG_APP_ID' ) );
+			} else {
+				$args = array( 'application_id' => self::$Appid );
+			}
 
 			foreach ( $arguments as $a ) {
 				$args = array_merge( $args, $a );

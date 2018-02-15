@@ -28,6 +28,7 @@ class TeamSpeakUserAuth extends Controller {
 		if ( $request->input( 'status' ) != 'ok' ) {
 			return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
 		}
+		$TeamSpeakServer = server::uid( $TsVerifyInfo->server_uid )->firstOrFail();
 
 		$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
 
@@ -42,11 +43,11 @@ class TeamSpeakUserAuth extends Controller {
 		}
 
 		$TsClientWgAccount                = new TsClientWgAccount;
+		$TsClientWgAccount->server_id     = $TeamSpeakServer->id;
 		$TsClientWgAccount->wg_account_id = $WgAccounts->id;
 		$TsClientWgAccount->client_uid    = $TsVerifyInfo->client_uid;
 		$TsClientWgAccount->saveOrFail();
 
-		$TeamSpeakServer = server::uid( $TsVerifyInfo->server_uid )->firstOrFail();
 
 		foreach ( $TeamSpeakServer->clans as $clan ) {
 			$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
@@ -136,6 +137,231 @@ class TeamSpeakUserAuth extends Controller {
 			return response()->json( [ 'verify' => 'ModuleIsDisabled' ] );
 		} catch ( ModelNotFoundException $e ) {
 			return response()->json( [ 'verify' => 'ServerNotFound' ] );
+		}
+	}
+
+	function UserChengeGroupCron() {
+		$TeamSpeakWgAuth = new TeamSpeakWgAuth();
+
+		foreach ( WgAccount::all() as $account ) {
+			foreach ( $account->tsClient as $tsClient ) {
+				$modules = $tsClient->server->modules();
+				foreach ( $modules->serverID( $tsClient->server->id )->enable()->get() as $module ) {
+					if ( $module->module->name == 'wg_auth_bot' ) {
+						$TeamSpeak = new TeamSpeak( $tsClient->server->instanse->id );
+						$TeamSpeak->ServerUseByUID( $tsClient->server->uid );
+						foreach ( $tsClient->server->clans as $clan ) {
+							$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
+
+							if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role ) ) {
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'commander' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->commander ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->commander );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'commander' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->commander ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->commander );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'executive_officer' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->executive_officer ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->executive_officer );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'executive_officer' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->executive_officer ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->executive_officer );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'personnel_officer' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->personnel_officer ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->personnel_officer );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'personnel_officer' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->personnel_officer ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->personnel_officer );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'combat_officer' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->combat_officer ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->combat_officer );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'combat_officer' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->combat_officer ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->combat_officer );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'intelligence_officer' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->intelligence_officer ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->intelligence_officer );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'intelligence_officer' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->intelligence_officer ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->intelligence_officer );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'quartermaster' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->quartermaster ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->quartermaster );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'quartermaster' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->quartermaster ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->quartermaster );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'recruitment_officer' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->recruitment_officer ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->recruitment_officer );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'recruitment_officer' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->recruitment_officer ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->recruitment_officer );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'junior_officer' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->junior_officer ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->junior_officer );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'junior_officer' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->junior_officer ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->junior_officer );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'private' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->private ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->private );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'private' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->private ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->private );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'recruit' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->recruit ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->recruit );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'recruit' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->recruit ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->recruit );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+								if ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role != 'reservist' ) {
+									if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->reservist ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->reservist );
+									}
+								} elseif ( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role == 'reservist' ) {
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->reservist ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->reservist );
+									}
+
+									if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $clan->clan_tag );
+									}
+								}
+
+							} else {
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->commander ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->commander );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->executive_officer ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->executive_officer );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->personnel_officer ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->personnel_officer );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->combat_officer ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->combat_officer );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->intelligence_officer ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->intelligence_officer );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->quartermaster ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->quartermaster );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->recruitment_officer ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->recruitment_officer );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->junior_officer ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->junior_officer );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->private ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->private );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->recruit ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->recruit );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->reservist ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->reservist );
+								}
+
+								if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $clan->clan_tag ) ) {
+									$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $clan->clan_tag );
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }
