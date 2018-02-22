@@ -79,7 +79,7 @@ class TeamSpeakUserAuth extends Controller {
 						foreach ( $module->options as $option3 ) {
 							if ( $option3->option->name == 'chat_notify_group_success' ) {
 								if ( $option3->value == 'enable' ) {
-									$ServerWgAuthNotifyAuthSuccessGroup = ServerWgAuthNotifyAuthSuccessGroup::where( 'server_id', '=', $Client->server->id )->first();
+									$ServerWgAuthNotifyAuthSuccessGroup = ServerWgAuthNotifyAuthSuccessGroup::where( 'server_id', '=', $TeamSpeakServer->id )->first();
 									$ServerWgAuthNotifyAuthSuccessGroup = $ServerWgAuthNotifyAuthSuccessGroup->makeHidden( [
 										'server_id',
 										'id',
