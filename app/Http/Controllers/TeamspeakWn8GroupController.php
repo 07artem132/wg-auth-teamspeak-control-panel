@@ -6,7 +6,6 @@ use App\WgAccount;
 use App\Services\WN8;
 use App\Services\TeamSpeak;
 use Illuminate\Http\Request;
-use App\ServerWn8PostEfficiency;
 
 class TeamspeakWn8GroupController extends Controller {
 	function UserChengeGroupCron() {
@@ -18,6 +17,12 @@ class TeamspeakWn8GroupController extends Controller {
 					if ( $module->module->name == 'wn8' ) {
 						$TeamSpeak = new TeamSpeak( $tsClient->server->instanse->id );
 						$TeamSpeak->ServerUseByUID( $tsClient->server->uid );
+						foreach ( $module->options as $option3 ) {
+							if ( $option3->option->name == 'nickname' ) {
+								$TeamSpeak->updateNickname( $option3->value );
+
+							}
+						}
 
 						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->red_sg_id ) ) {
 							if ( $wn8 > 949 ) {
@@ -68,7 +73,34 @@ class TeamspeakWn8GroupController extends Controller {
 						}
 
 						if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $sgid ) ) {
-							$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $sgid );
+							foreach ( $module->options as $option ) {
+								if ( $option->option->name == 'message_type' ) {
+									if ( $option->value == 'poke' ) {
+										foreach ( $module->options as $option2 ) {
+											if ( $option2->option->name == 'message_success' ) {
+												foreach ( $module->options as $option3 ) {
+													if ( $option3->option->name == 'notify' && $option3->value == 'enable' ) {
+														$TeamSpeak->SendPokeClient( $tsClient->client_uid, $option2->value );
+													}
+												}
+												$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $sgid );
+											}
+										}
+
+									} elseif ( $option->value == 'message' ) {
+										foreach ( $module->options as $option2 ) {
+											if ( $option2->option->name == 'message_success' ) {
+												foreach ( $module->options as $option3 ) {
+													if ( $option3->option->name == 'notify' && $option3->value == 'enable' ) {
+														$TeamSpeak->SendMessageClient( $tsClient->client_uid, $option2->value );
+													}
+												}
+												$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $sgid );
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}

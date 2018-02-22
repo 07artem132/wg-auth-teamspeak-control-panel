@@ -18,6 +18,12 @@ class TeamSpeakWotPlayersController extends Controller {
 					if ( $module->module->name == 'wot_players' ) {
 						$TeamSpeak = new TeamSpeak( $tsClient->server->instanse->id );
 						$TeamSpeak->ServerUseByUID( $tsClient->server->uid );
+						foreach ( $module->options as $option3 ) {
+							if ( $option3->option->name == 'nickname' ) {
+								$TeamSpeak->updateNickname( $option3->value );
+
+							}
+						}
 
 						foreach ( $tsClient->server->clans as $clan ) {
 							$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
@@ -35,10 +41,40 @@ class TeamSpeakWotPlayersController extends Controller {
 						}
 
 						if ( ! empty( $tsClient->server->wotPlayers->sg_id ) ) {
-							if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id ) ) {
-								$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id );
+							foreach ( $module->options as $option ) {
+								if ( $option->option->name == 'message_type' ) {
+									if ( $option->value == 'poke' ) {
+										foreach ( $module->options as $option2 ) {
+											if ( $option2->option->name == 'message_success' ) {
+												if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id ) ) {
+													$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id );
+													foreach ( $module->options as $option3 ) {
+														if ( $option3->option->name == 'notify' && $option3->value == 'enable' ) {
+															$TeamSpeak->SendPokeClient( $tsClient->client_uid, $option2->value );
+														}
+													}
+													continue;
+												}
+											}
+										}
 
-								continue;
+									} elseif ( $option->value == 'message' ) {
+										foreach ( $module->options as $option2 ) {
+											if ( $option2->option->name == 'message_success' ) {
+												if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id ) ) {
+													$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id );
+													foreach ( $module->options as $option3 ) {
+														if ( $option3->option->name == 'notify' && $option3->value == 'enable' ) {
+															$TeamSpeak->SendMessageClient( $tsClient->client_uid, $option2->value );
+														}
+													}
+													continue;
+												}
+
+											}
+										}
+									}
+								}
 							}
 						}
 

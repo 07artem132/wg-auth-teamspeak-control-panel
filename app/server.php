@@ -52,4 +52,11 @@ class server extends Model {
 		return $this->hasone( 'App\ServerWn8PostEfficiency', 'server_id', 'id' );
 	}
 
+	function WgAuthNotifyErrorGroup() {
+		return $this->hasone( 'App\ServerWgAuthNotifyAuthErrorGroup', 'server_id', 'id' );
+	}
+	function WgAuthNotifySuccessGroup() {
+		return $this->hasone( 'App\ServerWgAuthNotifyAuthSuccessGroup', 'server_id', 'id' );
+	}
+
 }

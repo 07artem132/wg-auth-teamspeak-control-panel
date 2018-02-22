@@ -13,6 +13,10 @@ use App\Services\TeamSpeakWgAuth;
 use App\Traits\JsonDecodeAndValidate;
 use App\WgAccount;
 use App\TsClientWgAccount;
+use App\ServerWgAuthNotifyAuthSuccessGroup;
+use App\Http\Controllers\TeamspeakWn8GroupController;
+use App\Http\Controllers\TeamspeakVerifyGameNicknameController;
+use App\Http\Controllers\TeamSpeakWotPlayersController;
 
 class TeamSpeakUserAuth extends Controller {
 	use JsonDecodeAndValidate;
@@ -70,9 +74,50 @@ class TeamSpeakUserAuth extends Controller {
 					}
 				}
 
+				foreach ( $TeamSpeakServer->modules as $module ) {
+					if ( $module->module->name == 'wg_auth_bot' ) {
+						foreach ( $module->options as $option3 ) {
+							if ( $option3->option->name == 'chat_notify_group_success' ) {
+								if ( $option3->value == 'enable' ) {
+									$ServerWgAuthNotifyAuthSuccessGroup = ServerWgAuthNotifyAuthSuccessGroup::where( 'server_id', '=', $Client->server->id )->first();
+									$ServerWgAuthNotifyAuthSuccessGroup = $ServerWgAuthNotifyAuthSuccessGroup->makeHidden( [
+										'server_id',
+										'id',
+										'created_at',
+										'updated_at'
+									] )->toArray();
+									foreach ( $ServerWgAuthNotifyAuthSuccessGroup as $group => $status ) {
+										if ( $status == 1 ) {
+											foreach ( $TeamSpeakServer->clans as $ClanNotify ) {
+												foreach ( $module->options as $option2 ) {
+													if ( $option2->option->name == 'chat_notify_group_success_message' ) {
+														$ts3conn->ReturnConnection()->serverGroupGetById( $ClanNotify->$group )->message( $option2->value );
+													}
+												}
+
+											}
+										}
+									}
+								}
+
+							}
+						}
+					}
+				}
+				$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+				$TeamspeakWn8GroupController->UserChengeGroupCron();
+				$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
+				$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
+
 				return response( 'авторизация прошла нормально', 200 );
 			}
 		}
+		$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+		$TeamspeakWn8GroupController->UserChengeGroupCron();
+		$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
+		$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
+		$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
+		$TeamSpeakWotPlayersController->UserChengeGroupCron();
 
 		return response( 'к сожалению вы не состоите в нужном калне', 200 );
 	}
@@ -103,7 +148,82 @@ class TeamSpeakUserAuth extends Controller {
 
 						return response()->json( [ 'verify' => 'AuthorizationRequired', 'verify_id' => $VerifyID ] );
 					} else {
-						$Client = TsClientWgAccount::clientUID( $request->input( "client_uid" ) )->firstOrFail();
+						$Clients = TsClientWgAccount::clientUID( $request->input( "client_uid" ) )->get();
+						foreach ( $Clients as $Client ) {
+							if ( $Client->server->uid == $request->input( "server_uid" ) ) {
+								$ts3conn = new TeamSpeak( $server->instanse->id );
+								$ts3conn->ServerUseByUID( $request->input( "server_uid" ) );
+
+								foreach ( $server->clans as $clan ) {
+									$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
+
+									if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$Client->wgAccount->account_id}->role ) ) {
+
+										$SGID = $clan->{$ClanInfo->{$clan->clan_id}->members->{$Client->wgAccount->account_id}->role};
+										if ( ! empty( $SGID ) ) {
+											if ( ! $ts3conn->ClientMemberOfServerGroupId( $request->input( "client_uid" ), $SGID ) ) {
+												$ts3conn->ClientAddServerGroup( $request->input( "client_uid" ), $SGID );
+											}
+										}
+
+										$SGID = $clan->clan_tag;
+										if ( ! empty( $SGID ) ) {
+											if ( ! $ts3conn->ClientMemberOfServerGroupId( $request->input( "client_uid" ), $SGID ) ) {
+												$ts3conn->ClientAddServerGroup( $request->input( "client_uid" ), $SGID );
+											}
+										}
+										foreach ( $module->options as $option3 ) {
+											if ( $option3->option->name == 'chat_notify_group_success' ) {
+												if ( $option3->value == 'enable' ) {
+													$ServerWgAuthNotifyAuthSuccessGroup = ServerWgAuthNotifyAuthSuccessGroup::where( 'server_id', '=', $Client->server->id )->first();
+													$ServerWgAuthNotifyAuthSuccessGroup = $ServerWgAuthNotifyAuthSuccessGroup->makeHidden( [
+														'server_id',
+														'id',
+														'created_at',
+														'updated_at'
+													] )->toArray();
+													foreach ( $ServerWgAuthNotifyAuthSuccessGroup as $group => $status ) {
+														if ( $status == 1 ) {
+															foreach ( $server->clans as $ClanNotify ) {
+																foreach ( $module->options as $option2 ) {
+																	if ( $option2->option->name == 'chat_notify_group_success_message' ) {
+																		$ts3conn->ReturnConnection()->serverGroupGetById( $ClanNotify->$group )->message( $option2->value );
+																	}
+																}
+
+															}
+														}
+													}
+												}
+
+											}
+										}
+										$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+										$TeamspeakWn8GroupController->UserChengeGroupCron();
+										$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
+										$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
+
+										return response()->json( [ 'verify' => 'successfully' ] );
+									}
+								}
+								$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+								$TeamspeakWn8GroupController->UserChengeGroupCron();
+								$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
+								$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
+								$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
+								$TeamSpeakWotPlayersController->UserChengeGroupCron();
+
+								return response()->json( [ 'verify' => 'ClanNotAllowedOrNoClan' ] );
+
+							}
+						}
+
+						$TsClientWgAccount                = new TsClientWgAccount;
+						$TsClientWgAccount->server_id     = $Client->server->id;
+						$TsClientWgAccount->wg_account_id = $Client->wgAccount->id;
+						$TsClientWgAccount->client_uid    = $request->input( "client_uid" );
+						$TsClientWgAccount->saveOrFail();
+
 						foreach ( $server->clans as $clan ) {
 							$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
 
@@ -125,9 +245,46 @@ class TeamSpeakUserAuth extends Controller {
 									}
 								}
 
+								foreach ( $module->options as $option3 ) {
+									if ( $option3->option->name == 'chat_notify_group_success' ) {
+										if ( $option3->value == 'enable' ) {
+											$ServerWgAuthNotifyAuthSuccessGroup = ServerWgAuthNotifyAuthSuccessGroup::where( 'server_id', '=', $Client->server->id )->first();
+											$ServerWgAuthNotifyAuthSuccessGroup = $ServerWgAuthNotifyAuthSuccessGroup->makeHidden( [
+												'server_id',
+												'id',
+												'created_at',
+												'updated_at'
+											] )->toArray();
+											foreach ( $ServerWgAuthNotifyAuthSuccessGroup as $group => $status ) {
+												if ( $status == 1 ) {
+													foreach ( $server->clans as $ClanNotify ) {
+														foreach ( $module->options as $option2 ) {
+															if ( $option2->option->name == 'chat_notify_group_success_message' ) {
+																$ts3conn->ReturnConnection()->serverGroupGetById( $ClanNotify->$group )->message( $option2->value );
+															}
+														}
+
+													}
+												}
+											}
+										}
+
+									}
+								}
+								$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+								$TeamspeakWn8GroupController->UserChengeGroupCron();
+								$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
+								$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
+
 								return response()->json( [ 'verify' => 'successfully' ] );
 							}
 						}
+						$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+						$TeamspeakWn8GroupController->UserChengeGroupCron();
+						$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
+						$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
+						$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
+						$TeamSpeakWotPlayersController->UserChengeGroupCron();
 
 						return response()->json( [ 'verify' => 'ClanNotAllowedOrNoClan' ] );
 					}

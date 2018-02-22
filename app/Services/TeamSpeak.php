@@ -24,6 +24,20 @@ class TeamSpeak {
 		return $this->ts3conn;
 	}
 
+	function SendMessageClient( $ClientUID, $message ) {
+		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		$this->ts3conn->clientGetByDbid( $cldbid )->message( $message );
+	}
+
+	function SendPokeClient( $ClientUID, $message ) {
+		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		$this->ts3conn->clientGetByDbid( $cldbid )->poke( $message );
+	}
+
+	function updateNickname( $nickname ) {
+		$this->ts3conn->execute( 'clientupdate', [ 'client_nickname' => $nickname ] );
+	}
+
 	function ServerUseByUID( $ServerUID ) {
 		$this->ts3conn = $this->ts3conn->serverGetByUid( $ServerUID );
 	}
