@@ -32,6 +32,6 @@ class ModuleOptions extends Model {
 	}
 
 	public function scopemodule( $query, $module_id ) {
-		return $query->where( [ 'module_id', '=', $module_id ] );
+		return $query->where(  'module_id', '=', $module_id  );
 	}
 }
