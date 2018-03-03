@@ -3,7 +3,7 @@
         @foreach ($Instanses as $Instanse)
             <tr>
                 <td>
-                    <input type="text" name="{{$Instanse['name']}}" title="{{$Instanse['name']}}"
+                    <input style="width: 500px;" type="text" name="{{$Instanse['name']}}" title="{{$Instanse['name']}}"
                            placeholder="{{$Instanse['name']}}" required>
                 </td>
             </tr>

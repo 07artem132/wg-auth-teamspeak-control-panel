@@ -1,7 +1,7 @@
 <table border="1">
     <thead>
     <tr>
-        <td style="text-align: center" colspan="6"><a href="/teamspeak/{{ $Instanses[0]['instanse_id'] }}/server/add">добавить
+        <td style="text-align: center" colspan="6"><a href="/teamspeak/{{ $Instanseid }}/server/add">добавить
                 сервер</a></td>
     </tr>
     <tr>
