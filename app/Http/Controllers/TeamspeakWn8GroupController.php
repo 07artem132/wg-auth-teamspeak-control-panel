@@ -19,8 +19,7 @@ class TeamspeakWn8GroupController extends Controller {
 						$TeamSpeak->ServerUseByUID( $tsClient->server->uid );
 						foreach ( $module->options as $option3 ) {
 							if ( $option3->option->name == 'nickname' ) {
-								$TeamSpeak->updateNickname( $option3->value );
-
+								$TeamSpeak->updateNickname( (string) $option3->value ); //проблема с сменой никнейма, nickname is already in use
 							}
 						}
 
@@ -102,6 +101,7 @@ class TeamspeakWn8GroupController extends Controller {
 								}
 							}
 						}
+						$TeamSpeak->ReturnConnection()->execute('quit');
 					}
 				}
 			}

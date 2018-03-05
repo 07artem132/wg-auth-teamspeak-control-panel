@@ -101,7 +101,7 @@ class ServerModuleConfigControllers {
 		$ServerWn8PostEfficiency->purple_sg_id    = $request->input( 'purple_sg_id' );
 		$ServerWn8PostEfficiency->saveOrFail();
 
-		return response()->redirectTo( 'teamspeak/' . $id . '/' . $uid . '/module/' . $modulesID . '/wn8/' . '/list' );
+		return response()->redirectTo( 'teamspeak/' . $id . '/' . $uid . '/module/' . $modulesID . '/wn8/list' );
 	}
 
 	function WN8editModuleGroup( Request $request, $id, $uid, $modulesID, $wn8id ) {

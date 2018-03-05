@@ -75,6 +75,7 @@ class TeamspeakVerifyGameNicknameController extends Controller {
 								}
 							}
 						}
+						$TeamSpeak->ReturnConnection()->execute('quit');
 					}
 				}
 			}

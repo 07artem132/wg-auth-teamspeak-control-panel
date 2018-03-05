@@ -516,6 +516,7 @@ class TeamSpeakUserAuth extends Controller {
 								}
 							}
 						}
+						$TeamSpeak->ReturnConnection()->execute('quit');
 					}
 				}
 			}
