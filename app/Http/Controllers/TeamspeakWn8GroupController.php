@@ -24,32 +24,37 @@ class TeamspeakWn8GroupController extends Controller {
 						}
 
 						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->red_sg_id ) ) {
-							if ( $wn8 > 949 ) {
+							if ( $wn8 > 399 ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wn8->red_sg_id );
 							}
 						}
 
 						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->yellow_sg_id ) ) {
-							if ( $wn8 < 950 || $wn8 > 1549 ) {
+							if ( $wn8 < 400 || $wn8 > 899 ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wn8->yellow_sg_id );
 							}
 						}
 
 						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->green_sg_id ) ) {
-							if ( $wn8 < 1550 || $wn8 > 2349 ) {
+							if ( $wn8 < 900 || $wn8 > 1469 ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wn8->green_sg_id );
 							}
 						}
 
 						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->turquoise_sg_id ) ) {
-							if ( $wn8 < 2350 || $wn8 > 3129 ) {
+							if ( $wn8 < 1470 || $wn8 > 2179 ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wn8->turquoise_sg_id );
 							}
 						}
 
 						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->purple_sg_id ) ) {
-							if ( $wn8 < 3130 ) {
+							if ( $wn8 < 2180 || $wn8 > 2879 ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wn8->purple_sg_id );
+							}
+						}
+						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->purple_sg_id ) ) {
+							if ( $wn8 < 2880  ) {
+								$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wn8->terkin_sg_id );
 							}
 						}
 
