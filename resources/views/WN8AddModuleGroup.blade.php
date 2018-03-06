@@ -52,7 +52,7 @@
         </tr>
         <tr>
             <td>
-                <input type="submit" name="submitButton" value="добавить клан"/>
+                <input type="submit" name="submitButton" value="добавить настройки модуля"/>
             </td>
         </tr>
     </table>

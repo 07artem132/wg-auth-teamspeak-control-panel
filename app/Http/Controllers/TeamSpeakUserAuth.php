@@ -202,6 +202,7 @@ class TeamSpeakUserAuth extends Controller {
 										$TeamspeakWn8GroupController->UserChengeGroupCron();
 										$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
 										$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
+										$ts3conn->ReturnConnection()->execute( 'quit' );
 
 										return response()->json( [ 'verify' => 'successfully' ] );
 									}
@@ -212,6 +213,7 @@ class TeamSpeakUserAuth extends Controller {
 								$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
 								$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
 								$TeamSpeakWotPlayersController->UserChengeGroupCron();
+								$ts3conn->ReturnConnection()->execute( 'quit' );
 
 								return response()->json( [ 'verify' => 'ClanNotAllowedOrNoClan' ] );
 
@@ -275,6 +277,8 @@ class TeamSpeakUserAuth extends Controller {
 								$TeamspeakWn8GroupController->UserChengeGroupCron();
 								$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
 								$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
+
+								$ts3conn->ReturnConnection()->execute( 'quit' );
 
 								return response()->json( [ 'verify' => 'successfully' ] );
 							}
@@ -516,7 +520,7 @@ class TeamSpeakUserAuth extends Controller {
 								}
 							}
 						}
-						$TeamSpeak->ReturnConnection()->execute('quit');
+						$TeamSpeak->ReturnConnection()->execute( 'quit' );
 					}
 				}
 			}

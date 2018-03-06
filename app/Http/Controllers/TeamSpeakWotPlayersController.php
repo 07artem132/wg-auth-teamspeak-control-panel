@@ -77,7 +77,7 @@ class TeamSpeakWotPlayersController extends Controller {
 								}
 							}
 						}
-
+						$TeamSpeak->ReturnConnection()->execute( 'quit' );
 					}
 				}
 			}
