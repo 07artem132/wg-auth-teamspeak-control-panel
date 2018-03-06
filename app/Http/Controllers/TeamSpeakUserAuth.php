@@ -109,7 +109,7 @@ class TeamSpeakUserAuth extends Controller {
 				$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
 				$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
 
-				return response( 'авторизация прошла нормально', 200 );
+				return response( '<h1>авторизация прошла нормально</h1>', 200 );
 			}
 		}
 		$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
@@ -119,7 +119,7 @@ class TeamSpeakUserAuth extends Controller {
 		$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
 		$TeamSpeakWotPlayersController->UserChengeGroupCron();
 
-		return response( 'к сожалению вы не состоите в нужном калне', 200 );
+		return response( '<h1>к сожалению вы не состоите в нужном клане</h1>', 200 );
 	}
 
 	function Registration( $id ) {
@@ -128,7 +128,7 @@ class TeamSpeakUserAuth extends Controller {
 		try {
 			$this->JsonDecodeAndValidate( $WargamingAPI->GetVerifyDataByID( $id ) );
 		} catch ( InvalidJSON $e ) {
-			return response( 'Вероятно ссылка устарела...', 200 );
+			return response( '<h1>Вероятно ссылка устарела...</h1>', 200 );
 		}
 
 		$url = $WargamingAPI->genAuthUrl( env( 'APP_URL' ) . 'user/verify/' . $id . '/wg' );
