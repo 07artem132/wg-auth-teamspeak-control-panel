@@ -52,6 +52,16 @@
         </tr>
         <tr>
             <td>
+                <select name="terkin_sg_id" title="terkin_sg_id" required>
+                    <option selected disabled>terkin_sg_id</option>
+                    @foreach($groupList as $id => $name)
+                        <option value="{{$id}}">{{$name}}</option>
+                    @endforeach
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <input type="submit" name="submitButton" value="добавить настройки модуля"/>
             </td>
         </tr>
