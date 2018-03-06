@@ -52,10 +52,10 @@ class TeamspeakWn8GroupController extends Controller {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wn8->purple_sg_id );
 							}
 						}
-						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->purple_sg_id ) ) {
+						if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wn8->terkin_sg_id ) ) {
 							if ( $wn8 < 2880  ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wn8->terkin_sg_id );
-							}//bug
+							}
 						}
 
 						switch ( true ) {
