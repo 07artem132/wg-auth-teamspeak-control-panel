@@ -221,7 +221,7 @@ class TeamSpeakUserAuth extends Controller {
 						}
 
 						$TsClientWgAccount                = new TsClientWgAccount;
-						$TsClientWgAccount->server_id     = $Client->server->id;
+						$TsClientWgAccount->server_id     = $server->id;
 						$TsClientWgAccount->wg_account_id = $Client->wgAccount->id;
 						$TsClientWgAccount->client_uid    = $request->input( "client_uid" );
 						$TsClientWgAccount->saveOrFail();
