@@ -58,7 +58,7 @@ class TeamSpeakWgAuth {
 	}
 
 	function GetVerifyDataByID( $VerifyID ) {
-		return Cache::get( "PendingVerify:$VerifyID" );
+		return Cache::pull( "PendingVerify:$VerifyID" );
 	}
 
 	function ClientUidIsRegister( $uid ) {
