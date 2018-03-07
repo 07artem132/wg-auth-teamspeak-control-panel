@@ -17,6 +17,7 @@ use App\ServerWgAuthNotifyAuthSuccessGroup;
 use App\Http\Controllers\TeamspeakWn8GroupController;
 use App\Http\Controllers\TeamspeakVerifyGameNicknameController;
 use App\Http\Controllers\TeamSpeakWotPlayersController;
+use Cache;
 
 class TeamSpeakUserAuth extends Controller {
 	use JsonDecodeAndValidate;
@@ -26,6 +27,7 @@ class TeamSpeakUserAuth extends Controller {
 
 		try {
 			$TsVerifyInfo = $this->JsonDecodeAndValidate( $TeamSpeakWgAuth->GetVerifyDataByID( $id ) );
+			cache::delete( "PendingVerify:$id" );
 		} catch ( InvalidJSON $e ) {
 			return response( 'Вероятно ссылка устарела...', 200 );
 		}
