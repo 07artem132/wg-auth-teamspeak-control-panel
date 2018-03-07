@@ -49,7 +49,6 @@ class TeamSpeak {
 		if ( array_key_exists( $cldbid, $ServerGroupClientList ) ) {
 			return true;
 		}
-
 		return false;
 	}
 
