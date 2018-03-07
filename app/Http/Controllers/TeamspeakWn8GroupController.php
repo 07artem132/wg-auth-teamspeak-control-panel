@@ -112,13 +112,13 @@ class TeamspeakWn8GroupController extends Controller {
 								}
 							}
 							$TeamSpeak->ReturnConnection()->execute( 'quit' );
-
 						}
 					}
 				} catch ( \Exception $e ) {
 					echo 'error->' . $account->account_id . PHP_EOL;
 					echo $e->getMessage() . PHP_EOL;
-					echo '------'. PHP_EOL;
+					echo '------' . PHP_EOL;
+					$TeamSpeak->ReturnConnection()->execute( 'quit' );
 				}
 			}
 		}
