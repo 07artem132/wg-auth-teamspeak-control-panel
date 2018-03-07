@@ -116,7 +116,9 @@ class TeamspeakWn8GroupController extends Controller {
 						}
 					}
 				} catch ( \Exception $e ) {
-					echo 'error->'.$account->account_id;
+					echo 'error->' . $account->account_id . PHP_EOL;
+					echo $e->getMessage() . PHP_EOL;
+					echo '------'. PHP_EOL;
 				}
 			}
 		}
