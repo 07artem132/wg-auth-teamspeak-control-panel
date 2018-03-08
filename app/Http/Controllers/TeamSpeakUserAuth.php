@@ -61,6 +61,15 @@ class TeamSpeakUserAuth extends Controller {
 			if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$TsClientWgAccount->wgAccount->account_id}->role ) ) {
 				$ts3conn = new TeamSpeak( $TeamSpeakServer->instanse->id );
 				$ts3conn->ServerUseByUID( $TsVerifyInfo->server_uid );
+				foreach ( $TeamSpeakServer->modules()->serverID( $TeamSpeakServer->id )->enable()->get() as $module ) {
+					if ( $module->module->name == 'wg_auth_bot' ) {
+						foreach ( $module->options as $option3 ) {
+							if ( $option3->option->name == 'nickname' ) {
+								$ts3conn->updateNickname( (string) $option3->value ); //проблема с сменой никнейма, nickname is already in use
+							}
+						}
+					}
+				}
 
 				$SGID = $clan->{$ClanInfo->{$clan->clan_id}->members->{$TsClientWgAccount->wgAccount->account_id}->role};
 				if ( ! empty( $SGID ) ) {
@@ -155,6 +164,15 @@ class TeamSpeakUserAuth extends Controller {
 							if ( $Client->server->uid == $request->input( "server_uid" ) ) {
 								$ts3conn = new TeamSpeak( $server->instanse->id );
 								$ts3conn->ServerUseByUID( $request->input( "server_uid" ) );
+								foreach ( $Client->server->modules()->serverID( $Client->server->id )->enable()->get() as $module ) {
+									if ( $module->module->name == 'wg_auth_bot' ) {
+										foreach ( $module->options as $option3 ) {
+											if ( $option3->option->name == 'nickname' ) {
+												$ts3conn->updateNickname( (string) $option3->value ); //проблема с сменой никнейма, nickname is already in use
+											}
+										}
+									}
+								}
 
 								foreach ( $server->clans as $clan ) {
 									$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
