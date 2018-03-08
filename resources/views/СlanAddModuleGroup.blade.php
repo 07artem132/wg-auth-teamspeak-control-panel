@@ -7,7 +7,7 @@
         <tr>
             <td>
                 <select name="commander" title="commander" required>
-                    <option selected disabled>Командующий</option>
+                    <option selected disabled>Командующий (измените)</option>
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
                     @endforeach
@@ -17,7 +17,7 @@
         <tr>
             <td>
                 <select name="executive_officer" title="executive_officer" required>
-                    <option selected disabled>Заместитель командующего</option>
+                    <option selected disabled>Заместитель командующего (измените)</option>
 
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
@@ -28,7 +28,7 @@
         <tr>
             <td>
                 <select name="personnel_officer" title="personnel_officer" required>
-                    <option selected disabled>Офицер штаба</option>
+                    <option selected disabled>Офицер штаба (измените)</option>
 
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
@@ -39,7 +39,7 @@
         <tr>
             <td>
                 <select name="combat_officer" title="combat_officer" required>
-                    <option selected disabled>Командир подразделения</option>
+                    <option selected disabled>Командир подразделения (измените)</option>
 
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
@@ -50,7 +50,7 @@
         <tr>
             <td>
                 <select name="intelligence_officer" title="intelligence_officer" required>
-                    <option selected disabled>Офицер разведки</option>
+                    <option selected disabled>Офицер разведки (измените)</option>
 
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
@@ -61,7 +61,7 @@
         <tr>
             <td>
                 <select name="quartermaster" title="quartermaster" required>
-                    <option selected disabled>Офицер снабжения</option>
+                    <option selected disabled>Офицер снабжения (измените)</option>
 
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
@@ -72,7 +72,7 @@
         <tr>
             <td>
                 <select name="recruitment_officer" title="recruitment_officer" required>
-                    <option selected disabled>Офицер по кадрам</option>
+                    <option selected disabled>Офицер по кадрам (измените)</option>
 
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
@@ -83,7 +83,7 @@
         <tr>
             <td>
                 <select name="junior_officer" title="junior_officer" required>
-                    <option selected disabled>Младший офицер</option>
+                    <option selected disabled>Младший офицер (измените)</option>
 
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
@@ -94,7 +94,7 @@
         <tr>
             <td>
                 <select name="private" title="private" required>
-                    <option selected disabled>Боец</option>
+                    <option selected disabled>Боец (измените)</option>
 
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
@@ -105,7 +105,7 @@
         <tr>
             <td>
                 <select name="recruit" title="recruit" required>
-                    <option selected disabled>Новобранец</option>
+                    <option selected disabled>Новобранец (измените)</option>
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
                     @endforeach
@@ -115,7 +115,7 @@
         <tr>
             <td>
                 <select name="reservist" title="reservist" required>
-                    <option selected disabled>Резервист</option>
+                    <option selected disabled>Резервист (измените)</option>
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
                     @endforeach
@@ -125,7 +125,7 @@
         <tr>
             <td>
                 <select name="clan_tag" title="clan_tag" required>
-                    <option selected disabled>тег клана</option>
+                    <option selected disabled>тег клана (измените)</option>
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
                     @endforeach

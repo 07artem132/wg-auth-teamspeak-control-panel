@@ -11,6 +11,8 @@ namespace App\Http\Controllers;
 use App\server;
 use App\ServerModule;
 use App\ServerModuleOptions;
+use App\TsClientWgAccount;
+use App\WgAccount;
 use Illuminate\Http\Request;
 use App\module;
 use App\ModuleOptions;
@@ -154,6 +156,34 @@ class ServerModuleConfigControllers {
 
 	}
 
+	function WotList() {
+		$WotList = WgAccount::all()->toArray();
+
+		return view( 'WotList', [
+			'WotLists' => $WotList,
+		] );
+
+	}
+
+	function UidDetachment() {
+		return view( 'UidDetachment' );
+	}
+
+	function UidDetachmentDB( Request $request ) {
+		TsClientWgAccount::clientUID( $request->input( 'uid' ) )->delete();
+
+		return response()->redirectTo( '/teamspeak/uid/list' );
+	}
+
+	function UidList() {
+		$UidList = TsClientWgAccount::all()->toArray();
+
+		return view( 'UidList', [
+			'UidLists' => $UidList,
+		] );
+
+	}
+
 	function WotPlayersAddModuleGroup( Request $request, $id, $uid, $modulesID ) {
 		server::uid( base64_decode( $uid ) )->firstOrFail()->instanse->id;
 		$ts3conn = new TeamSpeak( server::uid( base64_decode( $uid ) )->firstOrFail()->instanse->id );
@@ -258,7 +288,8 @@ class ServerModuleConfigControllers {
 		] );
 
 	}
-	function AddtModuleGroupNonifySaveDB(Request $request, $id, $uid, $modulesID){
+
+	function AddtModuleGroupNonifySaveDB( Request $request, $id, $uid, $modulesID ) {
 		$ServerWgAuthNotifyAuthSuccessGroup                       = new ServerWgAuthNotifyAuthSuccessGroup;
 		$ServerWgAuthNotifyAuthSuccessGroup->server_id            = server::uid( base64_decode( $uid ) )->firstOrFail()->id;
 		$ServerWgAuthNotifyAuthSuccessGroup->commander            = $request->input( 'commander' );

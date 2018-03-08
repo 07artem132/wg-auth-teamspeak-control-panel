@@ -5,6 +5,13 @@
 
     RewriteEngine On
 
+    RewriteCond %{REQUEST_URI} ^/teamspeak
+    RewriteCond %{REQUEST_URI} !(^/user/verify)
+    RewriteCond %{REMOTE_ADDR} !^185\.57\.30\.55
+    RewriteCond %{REMOTE_ADDR} !^92\.63\.203\.176
+    RewriteCond %{REMOTE_ADDR} !^127\.0\.0\.1
+    RewriteRule ^(.*)$ - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -18,4 +25,5 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
 </IfModule>

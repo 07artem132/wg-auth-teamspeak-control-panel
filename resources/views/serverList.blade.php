@@ -1,7 +1,8 @@
+@include('nav')
 <table border="1">
     <thead>
     <tr>
-        <td style="text-align: center" colspan="6"><a href="/teamspeak/{{ $Instanseid }}/server/add">добавить
+        <td style="text-align: center" colspan="6"><a href="/teamspeak/{{ $InstanseID }}/server/add">добавить
                 сервер</a></td>
     </tr>
     <tr>
@@ -27,4 +28,4 @@
         </tr>
     @endforeach
 </table>
-
+@yield('nav')

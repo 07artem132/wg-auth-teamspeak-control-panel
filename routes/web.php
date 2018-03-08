@@ -31,10 +31,18 @@ Route::get( '/teamspeak/worker/config', [
 	'uses' => 'TeamSpeakWorker@GetConfig',
 ] );
 
-Route::get( '/user/wn8', [
-	'uses' => 'test@wn8',
+Route::get( '/teamspeak/uid/list', [
+	'uses' => 'ServerModuleConfigControllers@UidList',
 ] );
-
+Route::get( '/teamspeak/wot/list', [
+	'uses' => 'ServerModuleConfigControllers@WotList',
+] );
+Route::get( '/teamspeak/uid/detachment', [
+	'uses' => 'ServerModuleConfigControllers@UidDetachment',
+] );
+Route::post( '/teamspeak/uid/detachment', [
+	'uses' => 'ServerModuleConfigControllers@UidDetachmentDB',
+] );
 
 ////////////////////////////////////////////////
 Route::get( '/teamspeak/{id}/server/add', [

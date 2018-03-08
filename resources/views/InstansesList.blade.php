@@ -1,3 +1,4 @@
+@include('nav')
 <table border="1">
     <thead>
     <tr>
@@ -22,3 +23,4 @@
         </tr>
     @endforeach
 </table>
+@yield('nav')
