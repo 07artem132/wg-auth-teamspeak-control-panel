@@ -41,7 +41,6 @@ class ServerConfigControllers extends Controller {
 	function ListServer( $id ) {
 		$Instanse = server::where( 'instanse_id', '=', $id )->get();
 		$Instanse = $Instanse->makeHidden( [  ] )->toArray();
-
 		return view( 'serverList', [ 'Instanses' => $Instanse,'InstanseID'=>$id ] );
 	}
 

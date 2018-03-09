@@ -80,7 +80,10 @@ class TeamspeakVerifyGameNicknameController extends Controller {
 						}
 					}
 				} catch ( \Exception $e ) {
-
+					echo 'error->' . $account->account_id . PHP_EOL;
+					echo $e->getMessage() . PHP_EOL;
+					echo '------' . PHP_EOL;
+					$TeamSpeak->ReturnConnection()->execute( 'quit' );
 				}
 			}
 		}
