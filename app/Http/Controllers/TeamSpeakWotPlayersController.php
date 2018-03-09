@@ -32,11 +32,11 @@ class TeamSpeakWotPlayersController extends Controller {
 									if ( ! empty( $tsClient->server->wotPlayers->sg_id ) ) {
 										if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id ) ) {
 											$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id );
-
+											$TeamSpeak->ReturnConnection()->execute( 'quit' );
 											break 2;
 										}
 									}
-
+									$TeamSpeak->ReturnConnection()->execute( 'quit' );
 									break 2;
 								}
 							}
@@ -54,6 +54,7 @@ class TeamSpeakWotPlayersController extends Controller {
 																$TeamSpeak->SendPokeClient( $tsClient->client_uid, $option2->value );
 															}
 														}
+														$TeamSpeak->ReturnConnection()->execute( 'quit' );
 														continue;
 													}
 												}
@@ -69,6 +70,7 @@ class TeamSpeakWotPlayersController extends Controller {
 																$TeamSpeak->SendMessageClient( $tsClient->client_uid, $option2->value );
 															}
 														}
+														$TeamSpeak->ReturnConnection()->execute( 'quit' );
 														continue;
 													}
 
