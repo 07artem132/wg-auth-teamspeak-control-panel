@@ -31,12 +31,12 @@ class Kernel extends ConsoleKernel {
 		$schedule->call( function () {
 			$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
 			$TeamspeakWn8GroupController->UserChengeGroupCron();
-		} )->everyMinute();
+		} )->hourly();
 
 		$schedule->call( function () {
 			$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
 			$TeamSpeakWotPlayersController->UserChengeGroupCron();
-		} )->everyMinute();
+		} )->hourly();
 
 		$schedule->call( function () {
 			$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
@@ -46,8 +46,7 @@ class Kernel extends ConsoleKernel {
 		$schedule->call( function () {
 			$TeamSpeakUserAuth = new TeamSpeakUserAuth();
 			$TeamSpeakUserAuth->UserChengeGroupCron();
-		} )->everyMinute();
-
+		} )->hourly();
 	}
 
 	/**

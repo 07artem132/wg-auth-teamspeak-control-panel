@@ -44,6 +44,10 @@ class server extends Model {
 		return $this->hasone( 'App\ServerNoValidNickname', 'server_id', 'id' );
 	}
 
+	function TsClientWgAccount() {
+		return $this->hasMany( 'App\TsClientWgAccount', 'server_id', 'id' );
+	}
+
 	function modules() {
 		return $this->hasMany( 'App\ServerModule', 'server_id', 'id' );
 	}
@@ -51,6 +55,7 @@ class server extends Model {
 	function wn8() {
 		return $this->hasone( 'App\ServerWn8PostEfficiency', 'server_id', 'id' );
 	}
+
 	function WgAuthNotifySuccessGroup() {
 		return $this->hasone( 'App\ServerWgAuthNotifyAuthSuccessGroup', 'server_id', 'id' );
 	}
