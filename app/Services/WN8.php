@@ -30,9 +30,7 @@ class WN8 {
 
 		$this->loadExpectedTankValues( $expected_tank_values_version );
 
-		$this->wn8 = Cache::remember( "wn8:$this->account_id", 30, function () {
-			return $this->calculateWN8();
-		} );;
+		$this->wn8 = $this->calculateWN8();
 	}
 
 	protected function loadExpectedTankValues( $version ) {

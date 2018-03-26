@@ -11,13 +11,14 @@ namespace App\Services;
 use TeamSpeak3;
 use App\Instanse;
 use TeamSpeak3_Node_Servergroup;
+use App\server;
 
 class TeamSpeak {
-	private $ts3conn, $InstanceConfig;
+	private $ts3conn, $InstanceConfig, $latestUidSelect = null;
 
 	function __construct( $id ) {
 		$this->InstanceConfig = Instanse::findOrFail( $id );
-		$this->ts3conn        = TeamSpeak3::factory( "serverquery://{$this->InstanceConfig->login}:{$this->InstanceConfig->password}@{$this->InstanceConfig->ip}:{$this->InstanceConfig->port}/" );
+		$this->ts3conn        = TeamSpeak3::factory( "serverquery://{$this->InstanceConfig->login}:{$this->InstanceConfig->password}@{$this->InstanceConfig->ip}:{$this->InstanceConfig->port}/#use_offline_as_virtual" );
 	}
 
 	function ReturnConnection() {
@@ -39,7 +40,10 @@ class TeamSpeak {
 	}
 
 	function ServerUseByUID( $ServerUID ) {
-		$this->ts3conn = $this->ts3conn->serverGetByUid( $ServerUID );
+		if ( $this->latestUidSelect != $ServerUID ) {
+			$this->ts3conn         = $this->ts3conn->serverGetByUid( $ServerUID );
+			$this->latestUidSelect = $ServerUID;
+		}
 	}
 
 	function ClientMemberOfServerGroupId( $ClientUID, $SGID ) {
@@ -49,6 +53,7 @@ class TeamSpeak {
 		if ( array_key_exists( $cldbid, $ServerGroupClientList ) ) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -66,6 +71,12 @@ class TeamSpeak {
 	function ClientRemoveServerGroup( $ClientUID, $sgid ) {
 		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
 		$this->ts3conn->serverGroupClientDel( $sgid, $cldbid );
+	}
+
+	function clientGetServerGroupsByUid( $ClientUID ) {
+		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+
+		return $this->ts3conn->clientGetServerGroupsByDbid( $cldbid );
 	}
 
 	function GetServerList() {

@@ -25,6 +25,10 @@ class TsClientWgAccount extends Model {
 	public function scopeclientUID( $query, $ClientUID ) {
 		return $query->where( 'client_uid', '=', $ClientUID );
 	}
+	public function scopeserverID( $query, $ClientUID ) {
+		return $query->where( 'server_id', '=', $ClientUID );
+	}
+
 	function server(){
 		return $this->hasOne( 'App\server', 'id', 'server_id' );
 	}

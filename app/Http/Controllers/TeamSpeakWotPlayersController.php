@@ -6,90 +6,71 @@ use App\WgAccount;
 use App\Services\TeamSpeak;
 use Illuminate\Http\Request;
 use App\Services\TeamSpeakWgAuth;
+use App\Jobs\WotPlayersUpdateTeamSpeakClientGroupJob;
+use App\Instanse;
+use App\TsClientWgAccount;
+use Cache;
+use Log;
 
 class TeamSpeakWotPlayersController extends Controller {
 	function UserChengeGroupCron() {
-		$TeamSpeakWgAuth = new TeamSpeakWgAuth();
+		foreach ( Instanse::with( 'servers.modules.module', 'servers.wotPlayers', 'servers.TsClientWgAccount.wgAccount', 'servers.clans' )->get() as $Instanse ) {
+			$this->dispatch( new WotPlayersUpdateTeamSpeakClientGroupJob( $Instanse->toArray() ) );
+		}
+	}
 
-		foreach ( WgAccount::all() as $account ) {
-			foreach ( $account->tsClient as $tsClient ) {
-				try {
-					$modules = $tsClient->server->modules();
-					foreach ( $modules->serverID( $tsClient->server->id )->enable()->get() as $module ) {
-						if ( $module->module->name == 'wot_players' ) {
-							$TeamSpeak = new TeamSpeak( $tsClient->server->instanse->id );
-							$TeamSpeak->ServerUseByUID( $tsClient->server->uid );
-							foreach ( $module->options as $option3 ) {
-								if ( $option3->option->name == 'nickname' ) {
-									$TeamSpeak->updateNickname( $option3->value );
+	function UserChengeGroupUid( $uid ) {
+		try {
+			$TeamSpeakWgAuth   = new TeamSpeakWgAuth();
+			$tsClientWgAccount = TsClientWgAccount::with( 'wgAccount', 'server.modules.module', 'server.wotPlayers', 'server.TsClientWgAccount.wgAccount', 'server.clans' )->clientUID( $uid )->firstOrFail()->toArray();
+			$server            = $tsClientWgAccount['server'];
+			unset( $tsClientWgAccount['server'] );
+			foreach ( $server['modules'] as $module ) {
+				if ( $module['status'] == 'enable' && $module['module']['name'] == 'wot_players' ) {
+					$TeamSpeak = new TeamSpeak( $server['instanse_id'] );
+					$TeamSpeak->ServerUseByUID( $server['uid'] );
+					try {
+						$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $tsClientWgAccount['wg_account']['account_id'] )->{$tsClientWgAccount['wg_account']['account_id']}->clan_id;
+						if ( array_key_exists( 'wot_players', $server ) && ! empty( $server['wot_players']['sg_id'] ) ) {
+							$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount, $TeamSpeak ) {
+								$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $tsClientWgAccount['client_uid'] );
+								$TeamSpeak->ReturnConnection()->execute( 'quit' );
 
-								}
-							}
-
-							foreach ( $tsClient->server->clans as $clan ) {
-								$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
-								if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$account->account_id}->role ) ) {
-									if ( ! empty( $tsClient->server->wotPlayers->sg_id ) ) {
-										if ( $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id );
-											$TeamSpeak->ReturnConnection()->execute( 'quit' );
-											break 2;
-										}
-									}
-									$TeamSpeak->ReturnConnection()->execute( 'quit' );
-									break 2;
-								}
-							}
-
-							if ( ! empty( $tsClient->server->wotPlayers->sg_id ) ) {
-								foreach ( $module->options as $option ) {
-									if ( $option->option->name == 'message_type' ) {
-										if ( $option->value == 'poke' ) {
-											foreach ( $module->options as $option2 ) {
-												if ( $option2->option->name == 'message_success' ) {
-													if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id ) ) {
-														$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id );
-														foreach ( $module->options as $option3 ) {
-															if ( $option3->option->name == 'notify' && $option3->value == 'enable' ) {
-																$TeamSpeak->SendPokeClient( $tsClient->client_uid, $option2->value );
-															}
-														}
-														$TeamSpeak->ReturnConnection()->execute( 'quit' );
-														continue;
-													}
-												}
-											}
-
-										} elseif ( $option->value == 'message' ) {
-											foreach ( $module->options as $option2 ) {
-												if ( $option2->option->name == 'message_success' ) {
-													if ( ! $TeamSpeak->ClientMemberOfServerGroupId( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id ) ) {
-														$TeamSpeak->ClientAddServerGroup( $tsClient->client_uid, $tsClient->server->wotPlayers->sg_id );
-														foreach ( $module->options as $option3 ) {
-															if ( $option3->option->name == 'notify' && $option3->value == 'enable' ) {
-																$TeamSpeak->SendMessageClient( $tsClient->client_uid, $option2->value );
-															}
-														}
-														$TeamSpeak->ReturnConnection()->execute( 'quit' );
-														continue;
-													}
-
-												}
-											}
-										}
+								return $clientServerGroupsByUid;
+							} );
+							foreach ( $server['clans'] as $clan ) {
+								if ( $clan['clan_id'] == $playerClanID ) {
+									if ( array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {
+										$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wot_players']['sg_id'] );
+										continue 2;
 									}
 								}
 							}
-							$TeamSpeak->ReturnConnection()->execute( 'quit' );
+							if ( ! array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {
+								$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wot_players']['sg_id'] );
+							}
 						}
+
+					} catch ( \Exception $e ) {
+						echo $e->getMessage() . PHP_EOL;
+						echo $e->getTraceAsString() . PHP_EOL;
+						Log::error( $e->getMessage() );
+						Log::error( $e->getTraceAsString() );
 					}
-				} catch ( \Exception $e ) {
-					echo 'error->' . $account->account_id . PHP_EOL;
-					echo $e->getMessage() . PHP_EOL;
-					echo '------' . PHP_EOL;
-					$TeamSpeak->ReturnConnection()->execute( 'quit' );
 				}
 			}
+		} catch ( \Exception $e ) {
+			Log::error( $e->getMessage() );
+			Log::error( $e->getTraceAsString() );
+		}
+
+		try {
+			if ( ! is_null( $TeamSpeak ) ) {
+				$TeamSpeak->ReturnConnection()->execute( 'quit' );
+			}
+		} catch ( \Exception | \Throwable $e ) {
+			Log::error( $e->getMessage() );
+			Log::error( $e->getTraceAsString() );
 		}
 	}
 }
