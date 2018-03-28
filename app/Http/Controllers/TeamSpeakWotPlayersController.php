@@ -42,8 +42,9 @@ class TeamSpeakWotPlayersController extends Controller {
 								if ( $clan['clan_id'] == $playerClanID ) {
 									if ( array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {
 										$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wot_players']['sg_id'] );
-										continue 2;
+										break 2;
 									}
+									continue 2;
 								}
 							}
 							if ( ! array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {

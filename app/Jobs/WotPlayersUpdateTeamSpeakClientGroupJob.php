@@ -64,6 +64,7 @@ class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 												$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wot_players']['sg_id'] );
 												continue 2;
 											}
+											continue 2;
 										}
 									}
 									if ( ! array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {
