@@ -55,7 +55,13 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 
 											return $clientServerGroupsByUid;
 										} );
-										$wn8         = Cache::get( "wn8:" . $client['wg_account']['account_id'] );
+										$wn8 = Cache::remember( "wn8:" . $client['wg_account']['account_id'], 1440, function () use ( $client ) {
+											$wn8 = (string) new WN8( $client['wg_account']['account_id'] );
+											echo 'WN8UpdateCacheJob_' . $client['wg_account']['account_id'] . '->' . $wn8 . PHP_EOL;
+											Cache::put( "wn8:" . $client['wg_account']['account_id'], $wn8, 1440 );
+
+										} );
+
 										switch ( true ) {
 											case $wn8 >= 0 && $wn8 <= 949:
 												if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {

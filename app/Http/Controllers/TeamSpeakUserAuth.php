@@ -56,24 +56,24 @@ class TeamSpeakUserAuth extends Controller {
 			$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
 
 			if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$TsClientWgAccount->wgAccount->account_id}->role ) ) {
-				$this->UserChengeGroupUid( $request->input( "client_uid" ) );
+				$this->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 				$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
-				$TeamspeakWn8GroupController->UserChengeGroupUid( $request->input( "client_uid" ) );
+				$TeamspeakWn8GroupController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 				$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
-				$TeamspeakVerifyGameNicknameController->UserChengeGroupUid( $request->input( "client_uid" ) );
+				$TeamspeakVerifyGameNicknameController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 				$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
-				$TeamSpeakWotPlayersController->UserChengeGroupUid( $request->input( "client_uid" ) );
+				$TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 
 				return response( '<h1>авторизация прошла нормально</h1>', 200 );
 			}
 		}
-		$this->UserChengeGroupUid( $request->input( "client_uid" ) );
+		$this->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 		$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
-		$TeamspeakWn8GroupController->UserChengeGroupUid( $request->input( "client_uid" ) );
+		$TeamspeakWn8GroupController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 		$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
-		$TeamspeakVerifyGameNicknameController->UserChengeGroupUid( $request->input( "client_uid" ) );
+		$TeamspeakVerifyGameNicknameController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 		$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
-		$TeamSpeakWotPlayersController->UserChengeGroupUid( $request->input( "client_uid" ) );
+		$TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 
 		return response( '<h1>к сожалению вы не состоите в нужном клане</h1>', 200 );
 	}

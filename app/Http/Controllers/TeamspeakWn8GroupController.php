@@ -44,7 +44,11 @@ class TeamspeakWn8GroupController extends Controller {
 
 									return $clientServerGroupsByUid;
 								} );
-								$wn8         = Cache::get( "wn8:" . $tsClientWgAccount['wg_account']['account_id'] );
+								$wn8 = Cache::remember( "wn8:" . $tsClientWgAccount['wg_account']['account_id'], 1440, function () use ( $tsClientWgAccount ) {
+									$wn8 = (string) new WN8( $tsClientWgAccount['wg_account']['account_id'] );
+									Cache::put( "wn8:" . $tsClientWgAccount['wg_account']['account_id'], $wn8, 1440 );
+									return $wn8;
+								} );
 								switch ( true ) {
 									case $wn8 >= 0 && $wn8 <= 949:
 										if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
@@ -137,15 +141,20 @@ class TeamspeakWn8GroupController extends Controller {
 								foreach ( $server['modules'] as $module ) {
 									if ( $module['status'] == 'enable' && $module['module']['name'] == 'wot_players' ) {
 										$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount, $TeamSpeak ) {
-										try{
-											$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $tsClientWgAccount['client_uid'] );
-										} catch ( \Exception $e ) {
-											$TeamSpeak->ReturnConnection()->execute( 'quit' );
-											throw  new \Exception( 'no client on server' );
-										}
+											try {
+												$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $tsClientWgAccount['client_uid'] );
+											} catch ( \Exception $e ) {
+												$TeamSpeak->ReturnConnection()->execute( 'quit' );
+												throw  new \Exception( 'no client on server' );
+											}
+
 											return $clientServerGroupsByUid;
 										} );
-										$wn8         = Cache::get( "wn8:" . $tsClientWgAccount['wg_account']['account_id'] );
+										$wn8 = Cache::remember( "wn8:" . $tsClientWgAccount['wg_account']['account_id'], 1440, function () use ( $tsClientWgAccount ) {
+											$wn8 = (string) new WN8( $tsClientWgAccount['wg_account']['account_id'] );
+											Cache::put( "wn8:" . $tsClientWgAccount['wg_account']['account_id'], $wn8, 1440 );
+											return $wn8;
+										} );
 										switch ( true ) {
 											case $wn8 >= 0 && $wn8 <= 949:
 												if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
