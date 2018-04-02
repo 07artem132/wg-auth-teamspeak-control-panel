@@ -571,6 +571,9 @@ class TeamSpeakUserAuth extends Controller {
 											}
 											break;
 									}
+									if ( ! array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
+										$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['clan_tag'] );
+									}
 									continue 2;
 								}
 							}
@@ -606,6 +609,9 @@ class TeamSpeakUserAuth extends Controller {
 							}
 							if ( array_key_exists( $clan['reservist'], $clientGroup ) ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
+							}
+							if ( ! array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
+								$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['clan_tag'] );
 							}
 						}
 
