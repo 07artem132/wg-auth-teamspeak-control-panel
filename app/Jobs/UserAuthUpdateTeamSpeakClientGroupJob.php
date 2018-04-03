@@ -499,7 +499,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 													break;
 											}
 											if ( ! array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
-												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['clan_tag'] );
+												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $clan['clan_tag'] );
 											}
 											continue 2;
 										}
@@ -543,14 +543,14 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 									}
 									if ( ! array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['clan_tag'] );
+										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['clan_tag'] );
 									}
 								}
 
 							} catch ( \Exception $e ) {
 								if ( $e->getMessage() != 'no client on server' ) {
-									echo $e->getMessage() . PHP_EOL;
-									echo $e->getTraceAsString() . PHP_EOL;
+								#	echo $e->getMessage() . PHP_EOL;
+								#	echo $e->getTraceAsString() . PHP_EOL;
 									Log::error( $e->getMessage() );
 									Log::error( $e->getTraceAsString() );
 								}
