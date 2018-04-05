@@ -250,8 +250,8 @@ class TeamspeakWn8GroupController extends Controller {
 						}
 					} catch ( \Exception $e ) {
 						if ( $e->getMessage() != 'no client on server' ) {
-							echo $e->getMessage() . PHP_EOL;
-							echo $e->getTraceAsString() . PHP_EOL;
+							#echo $e->getMessage() . PHP_EOL;
+							#echo $e->getTraceAsString() . PHP_EOL;
 							Log::error( $e->getMessage() );
 							Log::error( $e->getTraceAsString() );
 						}

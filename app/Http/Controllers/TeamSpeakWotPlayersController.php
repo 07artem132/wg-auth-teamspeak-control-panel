@@ -62,8 +62,8 @@ class TeamSpeakWotPlayersController extends Controller {
 						}
 
 					} catch ( \Exception $e ) {
-						echo $e->getMessage() . PHP_EOL;
-						echo $e->getTraceAsString() . PHP_EOL;
+						#echo $e->getMessage() . PHP_EOL;
+						#echo $e->getTraceAsString() . PHP_EOL;
 						Log::error( $e->getMessage() );
 						Log::error( $e->getTraceAsString() );
 					}
