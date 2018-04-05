@@ -48,8 +48,10 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 											try {
 												$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $client['client_uid'] );
 											} catch ( \Exception $e ) {
-												$TeamSpeak->ReturnConnection()->execute( 'quit' );
-												throw  new \Exception( 'no client on server' );
+												if ( $e->getMessage() != 'empty result set' ) {
+													$TeamSpeak->ReturnConnection()->execute( 'quit' );
+													throw  new \Exception( 'no client on server' );
+												}
 											}
 											$TeamSpeak->ReturnConnection()->execute( 'quit' );
 

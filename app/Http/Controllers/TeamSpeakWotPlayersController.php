@@ -32,8 +32,17 @@ class TeamSpeakWotPlayersController extends Controller {
 					try {
 						$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $tsClientWgAccount['wg_account']['account_id'] )->{$tsClientWgAccount['wg_account']['account_id']}->clan_id;
 						if ( array_key_exists( 'wot_players', $server ) && ! empty( $server['wot_players']['sg_id'] ) ) {
-							$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount, $TeamSpeak ) {
-								$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $tsClientWgAccount['client_uid'] );
+							$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount ) {
+								$TeamSpeak = new TeamSpeak( $server['instanse_id'] );
+								$TeamSpeak->ServerUseByUID( $server['uid'] );
+								try {
+									$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $tsClientWgAccount['client_uid'] );
+								} catch ( \Exception $e ) {
+									if ( $e->getMessage() != 'empty result set' ) {
+										$TeamSpeak->ReturnConnection()->execute( 'quit' );
+										throw  new \Exception( 'no client on server' );
+									}
+								}
 								$TeamSpeak->ReturnConnection()->execute( 'quit' );
 
 								return $clientServerGroupsByUid;

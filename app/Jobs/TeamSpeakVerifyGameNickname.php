@@ -73,7 +73,14 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 												$clientGroup = (array) cache::remember( "ts:group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
 													$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
-													$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $client['client_uid'] );
+													try {
+														$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $client['client_uid'] );
+													} catch ( \Exception $e ) {
+														if ( $e->getMessage() != 'empty result set' ) {
+															$TeamSpeak->ReturnConnection()->execute( 'quit' );
+															throw  new \Exception( 'no client on server' );
+														}
+													}
 													$TeamSpeak->ReturnConnection()->execute( 'quit' );
 
 													return $clientServerGroupsByUid;

@@ -11,6 +11,10 @@
 |
 */
 
+Route::get( '/test/{uid}', [
+	'uses' => 'TeamSpeakWotPlayersController@UserChengeGroupUid',
+] );
+
 Route::get( '/', function () {
 	return view( 'welcome' );
 } );
