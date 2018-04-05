@@ -71,7 +71,10 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
-													$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+													if (! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
+														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+													}
+
 													if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
 													}
@@ -95,7 +98,9 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
-													$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+													if (! array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
+														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+													}
 													if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
 													}
@@ -119,7 +124,9 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
-													$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+													if (! array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
+														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+													}
 													if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
 													}
@@ -143,7 +150,9 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
-													$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+													if (! array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
+														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+													}
 													if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
 													}
@@ -167,7 +176,9 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
-													$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+													if (! array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
+														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+													}
 													if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
 													}
