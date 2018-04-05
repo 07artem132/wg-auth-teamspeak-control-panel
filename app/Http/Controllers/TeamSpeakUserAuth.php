@@ -165,8 +165,15 @@ class TeamSpeakUserAuth extends Controller {
 						$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $tsClientWgAccount['wg_account']['account_id'] )->{$tsClientWgAccount['wg_account']['account_id']}->clan_id;
 						$clanInfo     = $TeamSpeakWgAuth->clanInfo( $playerClanID );
 						if ( array_key_exists( 'clans', $server ) ) {
-							$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount, $TeamSpeak ) {
-								$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $tsClientWgAccount['client_uid'] );
+							$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount ) {
+								$TeamSpeak = new TeamSpeak( $server['instanse_id'] );
+								$TeamSpeak->ServerUseByUID( $server['uid'] );
+								try {
+									$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $tsClientWgAccount['client_uid'] );
+								} catch ( \Exception $e ) {
+									$TeamSpeak->ReturnConnection()->execute( 'quit' );
+									throw  new \Exception( 'no client on server' );
+								}
 								$TeamSpeak->ReturnConnection()->execute( 'quit' );
 
 								return $clientServerGroupsByUid;
