@@ -41,7 +41,7 @@ class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 							try {
 								$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $client['wg_account']['account_id'] )->{$client['wg_account']['account_id']}->clan_id;
 								if ( array_key_exists( 'wot_players', $server ) && ! empty( $server['wot_players']['sg_id'] ) ) {
-									$clientGroup = (array) cache::remember( "ts:group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
+									$clientGroup = (array) cache::remember( "ts:" . $server['uid'] . ":group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
 										$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 										$TeamSpeak->ServerUseByUID( $server['uid'] );
 										try {

@@ -37,27 +37,27 @@ class TeamspeakUpdateCacheJob implements ShouldQueue {
 					$TeamSpeak->ServerUseByUID( $server['uid'] );
 					if ( ! true ) {
 						foreach ( $TeamSpeak->ReturnConnection()->clientList() as $client ) {
-							foreach ( $server['ts_client_wg_account'] as $allowClient ) {
-								if ( $allowClient['client_uid'] == (string) $client['client_unique_identifier'] ) {
-									$clientJoinGroup = $TeamSpeak->ReturnConnection()->clientGetServerGroupsByDbid( $client['cldbid'] );
-									Cache::delete("ts:group:" . (string) $client['client_unique_identifier']);
-									Cache::add( "ts:group:" . (string) $client['client_unique_identifier'], $clientJoinGroup, 5 );
-									Cache::delete("ts:client:" . (string) $client['client_unique_identifier']);
-									Cache::add( "ts:client:" . (string) $client['client_unique_identifier'], $client, 5 );
-								}
-							}
+#							foreach ( $server['ts_client_wg_account'] as $allowClient ) {
+#								if ( $allowClient['client_uid'] == (string) $client['client_unique_identifier'] ) {
+							$clientJoinGroup = $TeamSpeak->ReturnConnection()->clientGetServerGroupsByDbid( $client['cldbid'] );
+							Cache::delete( "ts:" . $server['uid'] . ":group:" . (string) $client['client_unique_identifier'] );
+							Cache::add( "ts:" . $server['uid'] . ":group:" . (string) $client['client_unique_identifier'], $clientJoinGroup, 5 );
+							Cache::delete( "ts:" . $server['uid'] . ":client:" . (string) $client['client_unique_identifier'] );
+							Cache::add( "ts:" . $server['uid'] . ":client:" . (string) $client['client_unique_identifier'], $client, 5 );
+#								}
+#							}
 						}
 					} else {
 						foreach ( $TeamSpeak->ReturnConnection()->clientListDb( 0, 50000 ) as $client ) {
-							foreach ( $server['ts_client_wg_account'] as $allowClient ) {
-								if ( $allowClient['client_uid'] == (string) $client['client_unique_identifier'] ) {
-									$clientJoinGroup = $TeamSpeak->ReturnConnection()->clientGetServerGroupsByDbid( $client['cldbid'] );
-									Cache::delete("ts:group:" . (string) $client['client_unique_identifier']);
-									Cache::add( "ts:group:" . (string) $client['client_unique_identifier'], $clientJoinGroup, 5 );
-									Cache::delete("ts:client:" . (string) $client['client_unique_identifier']);
-									Cache::add( "ts:client:" . (string) $client['client_unique_identifier'], $client, 5 );
-								}
-							}
+							#				foreach ( $server['ts_client_wg_account'] as $allowClient ) {
+							#					if ( $allowClient['client_uid'] == (string) $client['client_unique_identifier'] ) {
+							$clientJoinGroup = $TeamSpeak->ReturnConnection()->clientGetServerGroupsByDbid( $client['cldbid'] );
+							Cache::delete( "ts:" . $server['uid'] . ":group:" . (string) $client['client_unique_identifier'] );
+							Cache::add( "ts:" . $server['uid'] . ":group:" . (string) $client['client_unique_identifier'], $clientJoinGroup, 5 );
+							Cache::delete( "ts:" . $server['uid'] . ":client:" . (string) $client['client_unique_identifier'] );
+							Cache::add( "ts:" . $server['uid'] . ":client:" . (string) $client['client_unique_identifier'], $client, 5 );
+							#					}
+							#				}
 						}
 					}
 				} catch ( \Exception $e ) {

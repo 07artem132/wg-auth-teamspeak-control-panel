@@ -42,7 +42,7 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 								$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $client['wg_account']['account_id'] )->{$client['wg_account']['account_id']}->clan_id;
 								foreach ( $server['clans'] as $clan ) {
 									if ( $clan['clan_id'] == $playerClanID ) {
-										$clientGroup = (array) cache::remember( "ts:group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
+										$clientGroup = (array) cache::remember( "ts:" . $server['uid'] . ":group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
 											$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											try {
@@ -200,7 +200,7 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 									} else {
 										foreach ( $server['modules'] as $module ) {
 											if ( $module['status'] == 'enable' && $module['module']['name'] == 'wot_players' ) {
-												$clientGroup = (array) cache::remember( "ts:group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
+												$clientGroup = (array) cache::remember( "ts:" . $server['uid'] . ":group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
 													$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													try {
@@ -354,8 +354,8 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 							} catch ( \Exception $e ) {
 								if ( $e->getMessage() != 'no client on server' ) {
 									print_r( $clientGroup );
-									echo 'wotID->' . $client['wg_account']['account_id'];
-									echo 'uid->' . $client['client_uid'];
+									echo 'wotID->' . $client['wg_account']['account_id'] . PHP_EOL;
+									echo 'uid->' . $client['client_uid'] . PHP_EOL;
 									echo $e->getMessage() . PHP_EOL;
 									echo $e->getTraceAsString() . PHP_EOL;
 									Log::error( $e->getMessage() );

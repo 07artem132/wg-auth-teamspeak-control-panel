@@ -41,7 +41,7 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 					if ( $module['status'] == 'enable' && $module['module']['name'] == 'verify_game_nickname' ) {
 						foreach ( $server['ts_client_wg_account'] as $client ) {
 							try {
-								$clientNickname = (string) cache::remember( "ts:client:" . $client['client_uid'], 5, function () use ( $client, $server ) {
+								$clientNickname = (string) cache::remember( "ts:" . $server['uid'] . ":client:" . $client['client_uid'], 5, function () use ( $client, $server ) {
 									$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 									$TeamSpeak->ServerUseByUID( $server['uid'] );
 									try {
@@ -70,7 +70,7 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 									if ( array_key_exists( 'no_valid_nickname', $server ) && ! empty( $server['no_valid_nickname']['sg_id'] ) ) {
 										foreach ( $server['clans'] as $clan ) {
 											if ( $clan['clan_id'] == $playerClanID ) {
-												$clientGroup = (array) cache::remember( "ts:group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
+												$clientGroup = (array) cache::remember( "ts:" . $server['uid'] . ":group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
 													$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													try {
@@ -95,7 +95,7 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 											} else {
 												foreach ( $server['modules'] as $module ) {
 													if ( $module['status'] == 'enable' && $module['module']['name'] == 'wot_players' ) {
-														$clientGroup = (array) cache::remember( "ts:group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
+														$clientGroup = (array) cache::remember( "ts:" . $server['uid'] . ":group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
 															$TeamSpeak               = new TeamSpeak( $this->instanses['id'] );
 															$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $client['client_uid'] );
 															$TeamSpeak->ReturnConnection()->execute( 'quit' );
@@ -116,7 +116,7 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 									}
 								} else {
 									if ( array_key_exists( 'no_valid_nickname', $server ) && ! empty( $server['no_valid_nickname']['sg_id'] ) ) {
-										$clientGroup = (array) cache::remember( "ts:group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
+										$clientGroup = (array) cache::remember( "ts:" . $server['uid'] . ":group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
 											$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $client['client_uid'] );
