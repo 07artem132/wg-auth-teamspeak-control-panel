@@ -32,7 +32,6 @@ class TeamspeakWn8GroupController extends Controller {
 					$TeamSpeak->ServerUseByUID( $server['uid'] );
 					try {
 						$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $tsClientWgAccount['wg_account']['account_id'] )->{$tsClientWgAccount['wg_account']['account_id']}->clan_id;
-						dd( $playerClanID );
 						foreach ( $server['clans'] as $clan ) {
 							if ( $clan['clan_id'] == $playerClanID ) {
 								$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount, $TeamSpeak ) {
@@ -53,7 +52,6 @@ class TeamspeakWn8GroupController extends Controller {
 
 									return $wn8;
 								} );
-								dd( $wn8 );
 
 								switch ( true ) {
 									case $wn8 >= 0 && $wn8 <= 949:
