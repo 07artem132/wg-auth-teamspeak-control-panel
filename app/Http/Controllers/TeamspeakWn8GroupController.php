@@ -54,131 +54,108 @@ class TeamspeakWn8GroupController extends Controller {
 								switch ( true ) {
 									case $wn8 >= 0 && $wn8 <= 399:
 										if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-											if ( is_null( $TeamSpeak ) ) {
-												$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-											}
-											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 											}
 										}
 										if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 										}
 										if ( array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 
 										}
 										if ( array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 
 										}
 										if ( array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 
 										}
 										break;
 									case $wn8 >= 400 && $wn8 <= 899:
 										if ( ! array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-											if ( is_null( $TeamSpeak ) ) {
-												$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-											}
-											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											if ( ! array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 											}
 										}
 										if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 										}
 										if ( array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 
 										}
 										if ( array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 
 										}
 										if ( array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 
 										}
 										break;
 									case $wn8 >= 900 && $wn8 <= 1469:
 										if ( ! array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-											if ( is_null( $TeamSpeak ) ) {
-												$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-											}
-											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											if ( ! array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 											}
 										}
 										if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 										}
 										if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 
 										}
 										if ( array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 
 										}
 										if ( array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 
 										}
 										break;
 									case $wn8 >= 1470 && $wn8 <= 2179:
 										if ( ! array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-											if ( is_null( $TeamSpeak ) ) {
-												$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-											}
-											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											if ( ! array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 											}
 										}
 										if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 										}
 										if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
-
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 										}
 										if ( array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
-
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 										}
 										if ( array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
-
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 										}
 										break;
 									case $wn8 >= 2180 && $wn8 <= 2879 :
 										if ( ! array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-											if ( is_null( $TeamSpeak ) ) {
-												$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-											}
-											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											if ( ! array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 											}
 										}
 										if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 										}
 										if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 
 										}
 										if ( array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 
 										}
 										if ( array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+											$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 
 										}
 										break;
@@ -204,131 +181,108 @@ class TeamspeakWn8GroupController extends Controller {
 										switch ( true ) {
 											case $wn8 >= 0 && $wn8 <= 399:
 												if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-													if ( is_null( $TeamSpeak ) ) {
-														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-													}
-													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+														$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 													}
 												}
 												if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 												}
 												if ( array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 
 												}
 												if ( array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 
 												}
 												if ( array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 
 												}
 												break;
 											case $wn8 >= 400 && $wn8 <= 899:
 												if ( ! array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-													if ( is_null( $TeamSpeak ) ) {
-														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-													}
-													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													if ( ! array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+														$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 													}
 												}
 												if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 												}
 												if ( array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 
 												}
 												if ( array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 
 												}
 												if ( array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 
 												}
 												break;
 											case $wn8 >= 900 && $wn8 <= 1469:
 												if ( ! array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-													if ( is_null( $TeamSpeak ) ) {
-														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-													}
-													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													if ( ! array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+														$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 													}
 												}
 												if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 												}
 												if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 
 												}
 												if ( array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 
 												}
 												if ( array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 
 												}
 												break;
 											case $wn8 >= 1470 && $wn8 <= 2179:
 												if ( ! array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-													if ( is_null( $TeamSpeak ) ) {
-														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-													}
-													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													if ( ! array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+														$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 													}
 												}
 												if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 												}
 												if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
-
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 												}
 												if ( array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
-
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 												}
 												if ( array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
-
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 												}
 												break;
 											case $wn8 >= 2180 && $wn8 <= 2879 :
 												if ( ! array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-													if ( is_null( $TeamSpeak ) ) {
-														$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-													}
-													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													if ( ! array_key_exists( $server['wn8']['purple_sg_id'], $clientGroup ) ) {
-														$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8']['purple_sg_id'] );
+														$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['purple_sg_id'] );
 													}
 												}
 												if ( array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['red_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['red_sg_id'] );
 												}
 												if ( array_key_exists( $server['wn8']['yellow_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['yellow_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['yellow_sg_id'] );
 
 												}
 												if ( array_key_exists( $server['wn8']['turquoise_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['turquoise_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['turquoise_sg_id'] );
 
 												}
 												if ( array_key_exists( $server['wn8']['green_sg_id'], $clientGroup ) ) {
-													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8']['green_sg_id'] );
+													$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $server['wn8']['green_sg_id'] );
 
 												}
 												break;
