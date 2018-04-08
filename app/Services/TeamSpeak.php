@@ -43,6 +43,11 @@ class TeamSpeak {
 		if ( $this->latestUidSelect != $ServerUID ) {
 			$this->ts3conn         = $this->ts3conn->serverGetByUid( $ServerUID );
 			$this->latestUidSelect = $ServerUID;
+			foreach ( server::uid( $ServerUID )->firstOrFail()->modules()->get() as $module ) {
+				if ( $module->module->toArray()['name'] == 'nickname_change' ) {
+					$this->updateNickname( $module->options->toArray()[0]['value'] . ' ' . rand( 0, 999 ) );
+				}
+			}
 		}
 	}
 
