@@ -52,7 +52,7 @@
         </tr>
         <tr>
             <td>
-                <select name="purple_sg_id" title="terkin_sg_id" required>
+                <select name="terkin_sg_id" title="terkin_sg_id" required>
                     <option selected disabled>terkin_sg_id</option>
                     @foreach($groupList as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
