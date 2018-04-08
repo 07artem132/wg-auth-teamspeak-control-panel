@@ -544,15 +544,15 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 									if ( array_key_exists( $clan['reservist'], $clientGroup ) ) {
 										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 									}
-									if ( ! array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
+									if ( array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
 										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['clan_tag'] );
 									}
 								}
 
 							} catch ( \Exception $e ) {
 								if ( $e->getMessage() != 'no client on server' ) {
-								#	echo $e->getMessage() . PHP_EOL;
-								#	echo $e->getTraceAsString() . PHP_EOL;
+									#	echo $e->getMessage() . PHP_EOL;
+									#	echo $e->getTraceAsString() . PHP_EOL;
 									Log::error( $e->getMessage() );
 									Log::error( $e->getTraceAsString() );
 								}
