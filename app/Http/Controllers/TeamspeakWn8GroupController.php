@@ -51,6 +51,10 @@ class TeamspeakWn8GroupController extends Controller {
 									Cache::put( "wn8:" . $tsClientWgAccount['wg_account']['account_id'], $wn8, 1440 );
 									return $wn8;
 								} );
+								if ( $tsClientWgAccount['wg_account']['account_id'] == 31401477 ) {
+									dd( $wn8 );
+								}
+
 								switch ( true ) {
 									case $wn8 >= 0 && $wn8 <= 949:
 										if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {

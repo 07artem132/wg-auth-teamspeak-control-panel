@@ -12,7 +12,7 @@
 */
 
 Route::get( '/test/{uid}', [
-	'uses' => 'TeamSpeakWotPlayersController@UserChengeGroupUid',
+	'uses' => 'TeamspeakWn8GroupController@UserChengeGroupUid',
 ] );
 
 Route::get( '/', function () {

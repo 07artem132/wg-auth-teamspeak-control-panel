@@ -63,9 +63,6 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 											Cache::put( "wn8:" . $client['wg_account']['account_id'], $wn8, 1440 );
 
 										} );
-										if ( $client['wg_account']['account_id'] == 31401477 ) {
-											dd( $wn8 );
-										}
 										switch ( true ) {
 											case $wn8 >= 0 && $wn8 <= 399:
 												if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {
