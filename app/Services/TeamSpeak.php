@@ -46,7 +46,7 @@ class TeamSpeak {
 			foreach ( server::uid( $ServerUID )->firstOrFail()->modules()->get() as $module ) {
 				if ( $module->module->toArray()['name'] == 'nickname_change' ) {
 					$nickname = mb_strimwidth( $module->options->toArray()[0]['value'] . ' ' . ( random_int( 0, 99999 ) ), 0, 30, '' );
-					echo $nickname;
+					echo $nickname . PHP_EOL;
 					$this->updateNickname( $nickname );
 				}
 			}
