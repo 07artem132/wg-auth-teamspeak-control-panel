@@ -354,6 +354,8 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 							} catch ( \Exception $e ) {
 								if ( $e->getMessage() != 'no client on server' ) {
 									print_r( $clientGroup );
+									echo 'wotID->' . $client['wg_account']['account_id'];
+									echo 'uid->' . $client['client_uid'];
 									echo $e->getMessage() . PHP_EOL;
 									echo $e->getTraceAsString() . PHP_EOL;
 									Log::error( $e->getMessage() );
