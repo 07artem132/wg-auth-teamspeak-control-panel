@@ -75,7 +75,7 @@ class TeamSpeakUserAuth extends Controller {
 		$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
 		$TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 
-		return response( '<h1>К сожалению вы не состоите в нужном клане</h1><br/><h1>Ваш ник '.$_GET['nickname'].' если это не ваш ник обратитесь к ☜★ ║Vasek_Terkin (Саня)║ ★☞</h1>', 200 );
+		return response( '<h1>К сожалению вы не состоите в нужном клане</h1><br/><h1>Ваш ник <span style="color: red;">'.$_GET['nickname'].'</span> если это не ваш ник обратитесь к ☜★ ║Vasek_Terkin (Саня)║ ★☞</h1>', 200 );
 	}
 
 	function Registration( $id ) {
