@@ -30,12 +30,18 @@ class WN8 {
 
 		$this->loadExpectedTankValues( $expected_tank_values_version );
 
-		$this->wn8 = $this->calculateWN8();
+		$this->wn8 = Cache::remember( "wn8:" . $account_id, env( 'WN8_CACHE_TIME' ), function () {
+			return (float) $this->calculateWN8();
+		} );
+
+		if ( env( 'APP_DEBUG' ) ) {
+			echo $this->wn8.PHP_EOL;
+		}
 	}
 
 	protected function loadExpectedTankValues( $version ) {
 		$buff = Cache::remember( "expected_tank_values:$version", 60 * 24 * 1, function () use ( $version ) {
-			return $this->JsonDecodeAndValidate( file_get_contents( 'http://www.wnefficiency.net/exp/expected_tank_values_' . $version . '.json' ) )->data;
+			return $this->JsonDecodeAndValidate( file_get_contents( 'https://static.modxvm.com/wn8-data-exp/json/wn8exp.json' ) )->data;
 		} );
 
 		foreach ( $buff AS $tank ) {
@@ -149,6 +155,14 @@ class WN8 {
 
 	public function __toString(): string {
 		return (string) $this->wn8;
+	}
+
+	public function toFloat(): float {
+		return (float) $this->wn8;
+	}
+
+	public function toInt(): int {
+		return (int) $this->wn8;
 	}
 
 }

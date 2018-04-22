@@ -41,7 +41,7 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 					if ( $module['status'] == 'enable' && $module['module']['name'] == 'verify_game_nickname' ) {
 						foreach ( $server['ts_client_wg_account'] as $client ) {
 							try {
-								$clientNickname = (string) cache::remember( "ts:" . $server['uid'] . ":client:" . $client['client_uid'], 5, function () use ( $client, $server ) {
+									$clientNickname = (string) cache::remember( "ts:" . $server['uid'] . ":client:" . $client['client_uid'], 5, function () use ( $client, $server ) {
 									$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 									$TeamSpeak->ServerUseByUID( $server['uid'] );
 									try {

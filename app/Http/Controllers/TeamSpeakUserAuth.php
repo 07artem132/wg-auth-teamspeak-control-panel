@@ -15,6 +15,7 @@ use App\TsClientWgAccount;
 use Cache;
 use App\Instanse;
 use Log;
+use App\Services\FastWargamingInfo;
 
 class TeamSpeakUserAuth extends Controller {
 	use JsonDecodeAndValidate;
@@ -53,7 +54,8 @@ class TeamSpeakUserAuth extends Controller {
 
 
 		foreach ( $TeamSpeakServer->clans as $clan ) {
-			$ClanInfo = $TeamSpeakWgAuth->clanInfo( $clan->clan_id );
+			$ClanInfo = FastWargamingInfo::Clan( $clan->clan_id );
+			Cache::put( "clan:$clan->clan_id", $ClanInfo, 30 );
 
 			if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$TsClientWgAccount->wgAccount->account_id}->role ) ) {
 				$this->UserChengeGroupUid( $TsVerifyInfo->client_uid );
@@ -75,7 +77,7 @@ class TeamSpeakUserAuth extends Controller {
 		$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
 		$TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 
-		return response( '<h1>К сожалению вы не состоите в нужном клане</h1><br/><h1>Ваш ник <span style="color: red;">'.$_GET['nickname'].'</span> если это не Ваш ник, то обратитесь к ☜★ ║Vasek_Terkin (Саня)║ ★☞</h1>', 200 );
+		return response( '<h1>Авторизация прошла нормально</h1><br/><h1>Ваш ник <span style="color: red;">' . $_GET['nickname'] . '</span> если это не Ваш ник, то обратитесь к ☜★ ║Vasek_Terkin (Саня)║ ★☞</h1>', 200 );
 	}
 
 	function Registration( $id ) {
@@ -153,7 +155,6 @@ class TeamSpeakUserAuth extends Controller {
 
 	function UserChengeGroupUid( $uid ) {
 		try {
-			$TeamSpeakWgAuth   = new TeamSpeakWgAuth();
 			$tsClientWgAccount = TsClientWgAccount::with( 'wgAccount', 'server.modules.module', 'server.TsClientWgAccount.wgAccount', 'server.clans' )->clientUID( $uid )->firstOrFail()->toArray();
 			$server            = $tsClientWgAccount['server'];
 			unset( $tsClientWgAccount['server'] );
@@ -162,8 +163,9 @@ class TeamSpeakUserAuth extends Controller {
 					$TeamSpeak = new TeamSpeak( $server['instanse_id'] );
 					$TeamSpeak->ServerUseByUID( $server['uid'] );
 					try {
-						$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $tsClientWgAccount['wg_account']['account_id'] )->{$tsClientWgAccount['wg_account']['account_id']}->clan_id;
-						$clanInfo     = $TeamSpeakWgAuth->clanInfo( $playerClanID );
+						$playerClanID = FastWargamingInfo::Account( $tsClientWgAccount['wg_account']['account_id'] )->clan_info->id;
+						$clanInfo     = FastWargamingInfo::Clan( $playerClanID );
+						Cache::put( "clan:$playerClanID", $clanInfo, 30 );
 						if ( array_key_exists( 'clans', $server ) ) {
 							$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount ) {
 								$TeamSpeak = new TeamSpeak( $server['instanse_id'] );
@@ -180,11 +182,10 @@ class TeamSpeakUserAuth extends Controller {
 
 								return $clientServerGroupsByUid;
 							} );
-
 							foreach ( $server['clans'] as $clan ) {
 								if ( $clan['clan_id'] == $playerClanID ) {
 									switch ( true ) {
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'commander':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'commander':
 											if ( ! array_key_exists( $clan['commander'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['commander'] );
 											}
@@ -219,7 +220,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'executive_officer':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'executive_officer':
 											if ( ! array_key_exists( $clan['executive_officer'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['executive_officer'] );
 											}
@@ -255,7 +256,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'personnel_officer':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'personnel_officer':
 											if ( ! array_key_exists( $clan['personnel_officer'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['personnel_officer'] );
 											}
@@ -291,7 +292,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'combat_officer':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'combat_officer':
 											if ( ! array_key_exists( $clan['combat_officer'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['combat_officer'] );
 											}
@@ -327,7 +328,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'intelligence_officer':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'intelligence_officer':
 											if ( ! array_key_exists( $clan['intelligence_officer'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['intelligence_officer'] );
 											}
@@ -363,7 +364,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'quartermaster':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'quartermaster':
 											if ( ! array_key_exists( $clan['quartermaster'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['quartermaster'] );
 											}
@@ -399,7 +400,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'recruitment_officer':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'recruitment_officer':
 											if ( ! array_key_exists( $clan['recruitment_officer'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['recruitment_officer'] );
 											}
@@ -435,7 +436,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'junior_officer':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'junior_officer':
 											if ( ! array_key_exists( $clan['junior_officer'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['junior_officer'] );
 											}
@@ -471,7 +472,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'private':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'private':
 											if ( ! array_key_exists( $clan['private'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['private'] );
 											}
@@ -507,7 +508,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'recruit':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'recruit':
 											if ( ! array_key_exists( $clan['recruit'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['recruit'] );
 											}
@@ -543,7 +544,7 @@ class TeamSpeakUserAuth extends Controller {
 												$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
 											break;
-										case $clanInfo->$playerClanID->members->{$tsClientWgAccount['wg_account']['account_id']}->role == 'reservist':
+										case $clanInfo[ $clan['clan_id'] ]['members'][ $tsClientWgAccount['wg_account']['account_id'] ]['role'] == 'reservist':
 											if ( ! array_key_exists( $clan['reservist'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 											}
@@ -619,7 +620,7 @@ class TeamSpeakUserAuth extends Controller {
 							if ( array_key_exists( $clan['reservist'], $clientGroup ) ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 							}
-							if ( ! array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
+							if (  array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['clan_tag'] );
 							}
 						}

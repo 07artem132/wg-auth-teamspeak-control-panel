@@ -31,9 +31,9 @@ class TeamspeakWn8GroupController extends Controller {
 					$TeamSpeak = new TeamSpeak( $server['instanse_id'] );
 					$TeamSpeak->ServerUseByUID( $server['uid'] );
 					try {
-						$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $tsClientWgAccount['wg_account']['account_id'] )->{$tsClientWgAccount['wg_account']['account_id']}->clan_id;
 						foreach ( $server['clans'] as $clan ) {
-							if ( $clan['clan_id'] == $playerClanID ) {
+							$clanInfo = $TeamSpeakWgAuth->clanInfo( $clan['clan_id'] );
+							if ( array_key_exists( $tsClientWgAccount['wg_account']['account_id'], $clanInfo[ $clan['clan_id'] ]['members'] ) ) {
 								$clientGroup = (array) cache::remember( "ts:group:" . $tsClientWgAccount['client_uid'], 5, function () use ( $server, $tsClientWgAccount, $TeamSpeak ) {
 									try {
 										$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $tsClientWgAccount['client_uid'] );
@@ -46,13 +46,8 @@ class TeamspeakWn8GroupController extends Controller {
 
 									return $clientServerGroupsByUid;
 								} );
-								$wn8         = Cache::remember( "wn8:" . $tsClientWgAccount['wg_account']['account_id'], 1440, function () use ( $tsClientWgAccount ) {
-									$wn8 = (string) new WN8( $tsClientWgAccount['wg_account']['account_id'] );
-									Cache::put( "wn8:" . $tsClientWgAccount['wg_account']['account_id'], $wn8, 1440 );
-
-									return $wn8;
-								} );
-
+								$wn8         = new WN8( $tsClientWgAccount['wg_account']['account_id'] );
+								$wn8         = $wn8->toInt();
 								switch ( true ) {
 									case $wn8 >= 0 && $wn8 <= 399:
 										if ( ! array_key_exists( $server['wn8']['red_sg_id'], $clientGroup ) ) {

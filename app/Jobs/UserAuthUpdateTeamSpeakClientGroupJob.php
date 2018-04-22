@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Services\FastWargamingInfo;
 
 class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -39,28 +40,27 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 					if ( $module['status'] == 'enable' && $module['module']['name'] == 'wg_auth_bot' ) {
 						foreach ( $server['ts_client_wg_account'] as $client ) {
 							try {
-								$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $client['wg_account']['account_id'] )->{$client['wg_account']['account_id']}->clan_id;
-								$clanInfo     = $TeamSpeakWgAuth->clanInfo( $playerClanID );
 								if ( array_key_exists( 'clans', $server ) ) {
 									$clientGroup = (array) cache::remember( "ts:" . $server['uid'] . ":group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
 										$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 										$TeamSpeak->ServerUseByUID( $server['uid'] );
 										try {
 											$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $client['client_uid'] );
+											$TeamSpeak->ReturnConnection()->execute( 'quit' );
+
+											return $clientServerGroupsByUid;
 										} catch ( \Exception $e ) {
 											if ( $e->getMessage() != 'empty result set' ) {
 												$TeamSpeak->ReturnConnection()->execute( 'quit' );
 												throw  new \Exception( 'no client on server' );
 											}
 										}
-										$TeamSpeak->ReturnConnection()->execute( 'quit' );
-
-										return $clientServerGroupsByUid;
 									} );
 									foreach ( $server['clans'] as $clan ) {
-										if ( $clan['clan_id'] == $playerClanID ) {
+										$clanInfo = $TeamSpeakWgAuth->clanInfo( $clan['clan_id'] );
+										if ( array_key_exists( $client['wg_account']['account_id'], $clanInfo[ $clan['clan_id'] ]['members'] ) ) {
 											switch ( true ) {
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'commander':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'commander':
 													if ( ! array_key_exists( $clan['commander'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -99,7 +99,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'executive_officer':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'executive_officer':
 													if ( ! array_key_exists( $clan['executive_officer'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -139,7 +139,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'personnel_officer':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'personnel_officer':
 													if ( ! array_key_exists( $clan['personnel_officer'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -179,7 +179,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'combat_officer':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'combat_officer':
 													if ( ! array_key_exists( $clan['combat_officer'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -219,7 +219,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'intelligence_officer':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'intelligence_officer':
 													if ( ! array_key_exists( $clan['intelligence_officer'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -259,7 +259,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'quartermaster':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'quartermaster':
 													if ( ! array_key_exists( $clan['quartermaster'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -299,7 +299,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'recruitment_officer':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'recruitment_officer':
 													if ( ! array_key_exists( $clan['recruitment_officer'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -339,7 +339,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'junior_officer':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'junior_officer':
 													if ( ! array_key_exists( $clan['junior_officer'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -379,7 +379,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'private':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'private':
 													if ( ! array_key_exists( $clan['private'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -419,7 +419,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'recruit':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'recruit':
 													if ( ! array_key_exists( $clan['recruit'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -459,7 +459,7 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
 													}
 													break;
-												case $clanInfo->$playerClanID->members->{$client['wg_account']['account_id']}->role == 'reservist':
+												case $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'] == 'reservist':
 													if ( ! array_key_exists( $clan['reservist'], $clientGroup ) ) {
 														if ( is_null( $TeamSpeak ) ) {
 															$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
@@ -510,45 +510,45 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 										$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 									}
 									$TeamSpeak->ServerUseByUID( $server['uid'] );
-
-									if ( array_key_exists( $clan['commander'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['commander'] );
-									}
-									if ( array_key_exists( $clan['executive_officer'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['executive_officer'] );
-									}
-									if ( array_key_exists( $clan['personnel_officer'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['personnel_officer'] );
-									}
-									if ( array_key_exists( $clan['combat_officer'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['combat_officer'] );
-									}
-									if ( array_key_exists( $clan['intelligence_officer'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['intelligence_officer'] );
-									}
-									if ( array_key_exists( $clan['quartermaster'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['quartermaster'] );
-									}
-									if ( array_key_exists( $clan['recruitment_officer'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['recruitment_officer'] );
-									}
-									if ( array_key_exists( $clan['junior_officer'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['junior_officer'] );
-									}
-									if ( array_key_exists( $clan['private'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['private'] );
-									}
-									if ( array_key_exists( $clan['recruit'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['recruit'] );
-									}
-									if ( array_key_exists( $clan['reservist'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
-									}
-									if ( array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
-										$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['clan_tag'] );
+									foreach ( $server['clans'] as $clan ) {
+										if ( array_key_exists( $clan['commander'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['commander'] );
+										}
+										if ( array_key_exists( $clan['executive_officer'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['executive_officer'] );
+										}
+										if ( array_key_exists( $clan['personnel_officer'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['personnel_officer'] );
+										}
+										if ( array_key_exists( $clan['combat_officer'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['combat_officer'] );
+										}
+										if ( array_key_exists( $clan['intelligence_officer'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['intelligence_officer'] );
+										}
+										if ( array_key_exists( $clan['quartermaster'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['quartermaster'] );
+										}
+										if ( array_key_exists( $clan['recruitment_officer'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['recruitment_officer'] );
+										}
+										if ( array_key_exists( $clan['junior_officer'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['junior_officer'] );
+										}
+										if ( array_key_exists( $clan['private'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['private'] );
+										}
+										if ( array_key_exists( $clan['recruit'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['recruit'] );
+										}
+										if ( array_key_exists( $clan['reservist'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['reservist'] );
+										}
+										if ( array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['clan_tag'] );
+										}
 									}
 								}
-
 							} catch ( \Exception $e ) {
 								if ( $e->getMessage() != 'no client on server' ) {
 									echo $e->getMessage() . PHP_EOL;

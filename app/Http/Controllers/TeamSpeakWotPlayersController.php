@@ -75,7 +75,7 @@ class TeamSpeakWotPlayersController extends Controller {
 		}
 
 		try {
-			if ( ! is_null( $TeamSpeak ) ) {
+			if ( isset( $TeamSpeak ) ) {
 				$TeamSpeak->ReturnConnection()->execute( 'quit' );
 			}
 		} catch ( \Exception | \Throwable $e ) {

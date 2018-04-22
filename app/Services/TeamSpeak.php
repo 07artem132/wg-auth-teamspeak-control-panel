@@ -12,6 +12,7 @@ use TeamSpeak3;
 use App\Instanse;
 use TeamSpeak3_Node_Servergroup;
 use App\server;
+use Cache;
 
 class TeamSpeak {
 	private $ts3conn, $InstanceConfig, $latestUidSelect = null;
@@ -45,9 +46,14 @@ class TeamSpeak {
 			$this->latestUidSelect = $ServerUID;
 			foreach ( server::uid( $ServerUID )->firstOrFail()->modules()->get() as $module ) {
 				if ( $module->module->toArray()['name'] == 'nickname_change' ) {
-					$nickname = mb_strimwidth( $module->options->toArray()[0]['value'] . ' ' . ( random_int( 0, 99999 ) ), 0, 30, '' );
+					$nickname = mb_strimwidth( $module->options->toArray()[0]['value'] . ' ' . ( random_int( 0, 9999 ) ), 0, 30, '' );
 					#echo $nickname . PHP_EOL;
-					$this->updateNickname( $nickname );
+					try {
+						$this->updateNickname( $nickname );
+					} catch ( \Exception $e ) {
+						$nickname = mb_strimwidth( $module->options->toArray()[0]['value'] . ' ' . ( random_int( 0, 9999 ) ), 0, 30, '' );
+						$this->updateNickname( $nickname );
+					}
 				}
 			}
 		}
@@ -65,8 +71,13 @@ class TeamSpeak {
 	}
 
 	function ClientAddServerGroup( $ClientUID, $sgid ) {
+
 		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
 		$this->ts3conn->serverGroupClientAdd( $sgid, $cldbid );
+
+		$cache = Cache::get( "ts:" . $this->latestUidSelect . ":group:" . $ClientUID );
+		$cache[ $sgid ] = [ 'ClientAddedGroupTimestamp' => microtime( true ) ];
+		Cache::put( "ts:" . $this->latestUidSelect . ":group:" . $ClientUID, $cache, 1 );
 	}
 
 	function ClientInfo( $ClientUID ) {

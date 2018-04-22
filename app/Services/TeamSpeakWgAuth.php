@@ -13,6 +13,7 @@ use App\Services\WargamingAPI;
 use Cache;
 use App\TsClientWgAccount;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Services\FastWargamingInfo;
 
 class TeamSpeakWgAuth {
 
@@ -42,8 +43,9 @@ class TeamSpeakWgAuth {
 	}
 
 	function clanInfo( $ClanID ) {
-		$data = Cache::remember( "clan:$ClanID", 30, function () use ( $ClanID ) {
-			return WargamingAPI::wgn()->clans->info( [ 'clan_id' => $ClanID, 'members_key' => 'id' ] );
+		$data = Cache::remember( "clan:$ClanID", 5, function () use ( $ClanID ) {
+			return FastWargamingInfo::Clan( $ClanID );
+			#return WargamingAPI::wgn()->clans->info( [ 'clan_id' => $ClanID, 'members_key' => 'id' ] );
 		} );
 
 		return $data;

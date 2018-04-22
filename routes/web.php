@@ -11,8 +11,8 @@
 |
 */
 
-Route::get( '/test/{uid}', [
-	'uses' => 'TeamspeakWn8GroupController@UserChengeGroupUid',
+Route::get( '/test/', [
+	'uses' => 'test@test',
 ] );
 
 Route::get( '/', function () {
