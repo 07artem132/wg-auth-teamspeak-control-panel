@@ -23,9 +23,7 @@ trait TeamSpeak3GetClientInfoTraits {
 				$TeamSpeak->ReturnConnection()->execute( 'quit' );
 
 				array_walk( $ClientInfo, function ( &$value, &$key ) {
-					if ( $value instanceof TeamSpeak3_Helper_String ) {
-						$value = (string) $value;
-					}
+					$value = (string) $value;
 				} );
 
 				return $ClientInfo;

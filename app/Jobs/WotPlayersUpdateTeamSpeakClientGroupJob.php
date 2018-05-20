@@ -52,7 +52,7 @@ class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wot_players']['sg_id'] );
 											if ( env( 'APP_DEBUG' ) ) {
-												echo "client uid->" . $client['client_uid'] . " remove server group id->" . $server['wot_players']['sg_id'];
+												echo "client uid->" . $client['client_uid'] . " remove server group id->" . $server['wot_players']['sg_id'].PHP_EOL;
 											}
 
 											continue 2;
@@ -67,7 +67,7 @@ class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 									$TeamSpeak->ServerUseByUID( $server['uid'] );
 									$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wot_players']['sg_id'] );
 									if ( env( 'APP_DEBUG' ) ) {
-										echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['wot_players']['sg_id'];
+										echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['wot_players']['sg_id'].PHP_EOL;
 									}
 									continue;
 								}
