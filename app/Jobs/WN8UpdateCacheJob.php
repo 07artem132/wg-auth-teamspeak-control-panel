@@ -31,9 +31,7 @@ class WN8UpdateCacheJob implements ShouldQueue {
 	 */
 	public function handle() {
 		if ( Redis::ttl( config( 'cache.prefix' ) . ":wn8:$this->accountID" ) < 600 || ! Cache::has( "wn8:$this->accountID" ) ) {
-			$wn8 = (string) new WN8( $this->accountID );
-			echo 'WN8UpdateCacheJob_' . $this->accountID . '->' . $wn8 . PHP_EOL;
-			Cache::put( "wn8:$this->accountID", $wn8, 1440 );
+			 new WN8( $this->accountID );
 		}
 
 	}

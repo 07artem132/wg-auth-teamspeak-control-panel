@@ -2,18 +2,19 @@
 
 namespace App\Jobs;
 
+use Log;
 use Illuminate\Bus\Queueable;
+use App\Services\TeamSpeakWgAuth;
+use App\Services\TeamSpeak;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Cache;
-use App\Services\TeamSpeakWgAuth;
-use Log;
-use App\Services\TeamSpeak;
+use App\Traits\TeamSpeak3GetClientGroupTraits;
 
 class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TeamSpeak3GetClientGroupTraits;
+
 	private $instanses;
 
 	/**
@@ -39,49 +40,50 @@ class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 					if ( $module['status'] == 'enable' && $module['module']['name'] == 'wot_players' ) {
 						foreach ( $server['ts_client_wg_account'] as $client ) {
 							try {
-								$playerClanID = $TeamSpeakWgAuth->getAccountInfo( $client['wg_account']['account_id'] )->{$client['wg_account']['account_id']}->clan_id;
-								if ( array_key_exists( 'wot_players', $server ) && ! empty( $server['wot_players']['sg_id'] ) ) {
-									$clientGroup = (array) cache::remember( "ts:" . $server['uid'] . ":group:" . $client['client_uid'], 5, function () use ( $server, $client ) {
-										$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-										$TeamSpeak->ServerUseByUID( $server['uid'] );
-										try {
-											$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $client['client_uid'] );
-										} catch ( \Exception $e ) {
-											if ( $e->getMessage() != 'empty result set' ) {
-												$TeamSpeak->ReturnConnection()->execute( 'quit' );
-												throw  new \Exception( 'no client on server' );
-											}
-										}
-										$TeamSpeak->ReturnConnection()->execute( 'quit' );
+								$clientGroup = $this->GetClientGroup( $this->instanses['id'], $server['uid'], $client['client_uid'] );
 
-										return $clientServerGroupsByUid;
-									} );
-									foreach ( $server['clans'] as $clan ) {
-										if ( $clan['clan_id'] == $playerClanID ) {
-											if ( array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {
-												if ( is_null( $TeamSpeak ) ) {
-													$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-												}
-												$TeamSpeak->ServerUseByUID( $server['uid'] );
-												$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wot_players']['sg_id'] );
-												continue 2;
+								foreach ( $server['clans'] as $clan ) {
+									$clanInfo = $TeamSpeakWgAuth->clanInfo( $clan['clan_id'] );
+									if ( array_key_exists( $client['wg_account']['account_id'], $clanInfo[ $clan['clan_id'] ]['members'] ) ) {
+										if ( array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {
+											if ( is_null( $TeamSpeak ) ) {
+												$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 											}
+											$TeamSpeak->ServerUseByUID( $server['uid'] );
+											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wot_players']['sg_id'] );
+											if ( env( 'APP_DEBUG' ) ) {
+												echo "client uid->" . $client['client_uid'] . " remove server group id->" . $server['wot_players']['sg_id'];
+											}
+
 											continue 2;
 										}
 									}
-									if ( ! array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {
-										if ( is_null( $TeamSpeak ) ) {
-											$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
-										}
-										$TeamSpeak->ServerUseByUID( $server['uid'] );
-										$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wot_players']['sg_id'] );
+								}
+
+								if ( ! array_key_exists( $server['wot_players']['sg_id'], $clientGroup ) ) {
+									if ( is_null( $TeamSpeak ) ) {
+										$TeamSpeak = new TeamSpeak( $this->instanses['id'] );
 									}
+									$TeamSpeak->ServerUseByUID( $server['uid'] );
+									$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wot_players']['sg_id'] );
+									if ( env( 'APP_DEBUG' ) ) {
+										echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['wot_players']['sg_id'];
+									}
+									continue;
 								}
 
 							} catch ( \Exception $e ) {
 								if ( $e->getMessage() != 'no client on server' ) {
-									echo $e->getMessage() . PHP_EOL;
-									echo $e->getTraceAsString() . PHP_EOL;
+									if ( ! is_null( $TeamSpeak ) ) {
+										$TeamSpeak->ReturnConnection()->execute( 'quit' );
+										$TeamSpeak = null;
+									}
+									Log::error( '-------------------------' );
+									Log::error( 'wotID->' . $client['wg_account']['account_id'] );
+									Log::error( 'uid->' . $client['client_uid'] );
+									if ( isset( $clientGroup ) ) {
+										Log::error( $clientGroup );
+									}
 									Log::error( $e->getMessage() );
 									Log::error( $e->getTraceAsString() );
 								}

@@ -35,7 +35,7 @@ class WN8 {
 		} );
 
 		if ( env( 'APP_DEBUG' ) ) {
-			echo $this->wn8.PHP_EOL;
+			echo $account_id.'->'.$this->wn8.PHP_EOL;
 		}
 	}
 
@@ -76,9 +76,6 @@ class WN8 {
 
 	}
 
-	/**
-	 * Calculate account WN8
-	 */
 	protected function calculateWN8(): float {
 
 		$summary = $this->getUserSummary( $this->account_id );

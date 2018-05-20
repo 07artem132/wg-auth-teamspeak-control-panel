@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel {
 	 * @return void
 	 */
 	protected function schedule( Schedule $schedule ) {
-		$schedule->call( function () {
+	/*	 $schedule->call( function () {
 			$TeamspeakUpdateCache = new TeamspeakUpdateCache();
 			$TeamspeakUpdateCache->Cron();
 		} )->everyMinute();
@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel {
 		$schedule->call( function () {
 			$WN8 = new Wn8UpdateCache();
 			$WN8->Cron();
-		} )->everyMinute();
+		} )->everyMinute();*/
 		$schedule->call( function () {
 			$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
 			$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();

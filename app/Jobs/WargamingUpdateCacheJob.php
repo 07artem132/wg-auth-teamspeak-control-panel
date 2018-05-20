@@ -31,7 +31,7 @@ class WargamingUpdateCacheJob implements ShouldQueue {
 	 */
 	public function handle() {
 		if ( Redis::ttl( config( 'cache.prefix' ).":account:$this->accountID" ) < 60 || ! Cache::has( "account:$this->accountID" ) ) {
-			Cache::put( "account:$this->accountID", WargamingAPI::wot()->account->info( array( 'account_id' => $this->accountID ) ), 30 );
+			Cache::put( "account:$this->accountID", WargamingAPI::wot()->account->info( array( 'account_id' => $this->accountID ) ), env('PLAYERINFO_CACHE_TIME') );
 		}
 	}
 }

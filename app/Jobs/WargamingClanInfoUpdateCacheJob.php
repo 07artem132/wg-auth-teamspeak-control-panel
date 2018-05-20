@@ -32,7 +32,7 @@ class WargamingClanInfoUpdateCacheJob implements ShouldQueue {
 	 */
 	public function handle() {
 		if ( Redis::ttl( config( 'cache.prefix' ) . ":clan:$this->clanID" ) < 60 || ! Cache::has( "clan:$this->clanID" ) ) {
-			Cache::put( "clan:$this->clanID", FastWargamingInfo::Clan( $this->clanID ), 30 );
+			Cache::put( "clan:$this->clanID", FastWargamingInfo::Clan( $this->clanID ), env('CLAN_INFO_CACHE_TIME') );
 		}
 	}
 }

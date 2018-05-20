@@ -75,9 +75,9 @@ class TeamSpeak {
 		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
 		$this->ts3conn->serverGroupClientAdd( $sgid, $cldbid );
 
-		$cache = Cache::get( "ts:" . $this->latestUidSelect . ":group:" . $ClientUID );
+		$cache          = Cache::get( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID" );
 		$cache[ $sgid ] = [ 'ClientAddedGroupTimestamp' => microtime( true ) ];
-		Cache::put( "ts:" . $this->latestUidSelect . ":group:" . $ClientUID, $cache, 1 );
+		Cache::put( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID", $cache, env( 'GROUP_CACHE_TIME' ) );
 	}
 
 	function ClientInfo( $ClientUID ) {

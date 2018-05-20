@@ -94,14 +94,14 @@ class ServerModuleConfigControllers {
 	}
 
 	function WN8AddModuleGroupSaveDb( Request $request, $id, $uid, $modulesID ) {
-		$ServerWn8PostEfficiency                  = new ServerWn8PostEfficiency;
-		$ServerWn8PostEfficiency->server_id       = server::uid( base64_decode( $uid ) )->firstOrFail()->id;
-		$ServerWn8PostEfficiency->red_sg_id       = $request->input( 'red_sg_id' );
-		$ServerWn8PostEfficiency->yellow_sg_id    = $request->input( 'yellow_sg_id' );
-		$ServerWn8PostEfficiency->green_sg_id     = $request->input( 'green_sg_id' );
-		$ServerWn8PostEfficiency->turquoise_sg_id = $request->input( 'turquoise_sg_id' );
-		$ServerWn8PostEfficiency->purple_sg_id    = $request->input( 'purple_sg_id' );
-		$ServerWn8PostEfficiency->terkin_sg_id    = $request->input( 'terkin_sg_id' );
+		$ServerWn8PostEfficiency                             = new ServerWn8PostEfficiency;
+		$ServerWn8PostEfficiency->server_id                  = server::uid( base64_decode( $uid ) )->firstOrFail()->id;
+		$ServerWn8PostEfficiency->bad_player_sg_id           = $request->input( 'bad_player_sg_id' );
+		$ServerWn8PostEfficiency->player_below_average_sg_id = $request->input( 'player_below_average_sg_id' );
+		$ServerWn8PostEfficiency->good_player_sg_id          = $request->input( 'good_player_sg_id' );
+		$ServerWn8PostEfficiency->average_player_sg_id       = $request->input( 'average_player_sg_id' );
+		$ServerWn8PostEfficiency->great_player_sg_id         = $request->input( 'great_player_sg_id' );
+		$ServerWn8PostEfficiency->unicum_player_sg_id        = $request->input( 'unicum_player_sg_id' );
 		$ServerWn8PostEfficiency->saveOrFail();
 
 		return response()->redirectTo( 'teamspeak/' . $id . '/' . $uid . '/module/' . $modulesID . '/wn8/list' );
