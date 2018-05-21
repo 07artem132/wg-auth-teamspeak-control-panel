@@ -77,7 +77,7 @@ class TeamSpeakUserAuth extends Controller {
 		$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
 		$TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 
-		return response( '<h1>Авторизация прошла нормально</h1><br/><h1>Ваш ник <span style="color: red;">' . $_GET['nickname'] . '</span> если это не Ваш ник, то обратитесь в тех поддержку</h1>', 200 );
+		return response( '<h1>Авторизация прошла нормально</h1><br/><h1>Ваш ник <span style="color: red;">' . $_GET['nickname'] . '</span> если это не Ваш ник, то обратитесь к смотряшему за сервером</h1>', 200 );
 	}
 
 	function Registration( $id ) {
