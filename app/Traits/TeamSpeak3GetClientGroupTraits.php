@@ -28,6 +28,7 @@ trait TeamSpeak3GetClientGroupTraits {
 
 				return $clientServerGroupsByUid;
 			} catch ( \Exception $e ) {
+				dd($e);
 				if ( isset( $TeamSpeak ) ) {
 					$TeamSpeak->ReturnConnection()->execute( 'quit' );
 				}
