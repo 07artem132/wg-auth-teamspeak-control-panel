@@ -57,6 +57,7 @@ class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 
 											continue 2;
 										}
+										continue 2;
 									}
 								}
 
