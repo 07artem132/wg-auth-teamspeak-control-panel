@@ -26,11 +26,7 @@ trait TeamSpeak3GetClientNicknameTraits {
 				if ( isset( $TeamSpeak ) ) {
 					$TeamSpeak->ReturnConnection()->execute( 'quit' );
 				}
-				if ( $e->getMessage() != 'database empty result set' ) {
-					throw  new \Exception( $e->getMessage() );
-				}
-
-				return [];
+				throw  new \Exception( $e->getMessage() );
 			}
 		} );
 	}
