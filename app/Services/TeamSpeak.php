@@ -89,6 +89,10 @@ class TeamSpeak {
 	function ClientRemoveServerGroup( $ClientUID, $sgid ) {
 		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
 		$this->ts3conn->serverGroupClientDel( $sgid, $cldbid );
+
+		$cache = Cache::get( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID" );
+		unset( $cache[ $sgid ] );
+		Cache::put( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID", $cache, env( 'GROUP_CACHE_TIME' ) );
 	}
 
 	function clientGetServerGroupsByUid( $ClientUID ) {
