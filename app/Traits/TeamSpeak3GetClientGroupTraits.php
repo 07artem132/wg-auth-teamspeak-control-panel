@@ -22,14 +22,17 @@ trait TeamSpeak3GetClientGroupTraits {
 				$clientServerGroupsByUid = $TeamSpeak->clientGetServerGroupsByUid( $client_uid );
 				$TeamSpeak->ReturnConnection()->execute( 'quit' );
 
-				array_walk( $clientServerGroupsByUid, function ( &$value, &$key ) {
-					dd($value,$key);
-						$value = (string) $value;
+				array_walk( $clientServerGroupsByUid, function ( &$group, &$group_id ) {
+					array_walk( $group, function ( &$value, &$key ) {
+						if ( $value instanceof TeamSpeak3_Helper_String ) {
+							$value = (string) $value;
+						}
+					} );
 				} );
 
 				return $clientServerGroupsByUid;
 			} catch ( \Exception $e ) {
-				dd($e);
+				dd( $e );
 				if ( isset( $TeamSpeak ) ) {
 					$TeamSpeak->ReturnConnection()->execute( 'quit' );
 				}
