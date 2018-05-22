@@ -21,9 +21,11 @@ trait TeamSpeak3GetClientNicknameTraits {
 				$ClientInfo = $TeamSpeak->ClientInfo( $client_uid );
 				$TeamSpeak->ReturnConnection()->execute( 'quit' );
 
-				return (string)$ClientInfo['client_nickname'];
+				return (string) $ClientInfo['client_nickname'];
 			} catch ( \Exception $e ) {
-				$TeamSpeak->ReturnConnection()->execute( 'quit' );
+				if ( isset( $TeamSpeak ) ) {
+					$TeamSpeak->ReturnConnection()->execute( 'quit' );
+				}
 				if ( $e->getMessage() != 'database empty result set' ) {
 					throw  new \Exception( $e->getMessage() );
 				}
