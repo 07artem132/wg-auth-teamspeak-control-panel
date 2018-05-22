@@ -23,6 +23,7 @@ trait TeamSpeak3GetClientGroupTraits {
 				$TeamSpeak->ReturnConnection()->execute( 'quit' );
 
 				array_walk( $clientServerGroupsByUid, function ( &$value, &$key ) {
+					dd($value,$key);
 						$value = (string) $value;
 				} );
 
