@@ -12,7 +12,7 @@
 */
 
 Route::get( '/test/', [
-	'uses' => 'test@test',
+	'uses' => 'ClearOldDataControllers@list',
 ] );
 
 Route::get( '/', function () {
