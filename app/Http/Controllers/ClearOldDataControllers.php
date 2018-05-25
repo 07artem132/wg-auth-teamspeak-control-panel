@@ -10,13 +10,14 @@ namespace App\Http\Controllers;
 
 use App\Services\TeamSpeak;
 use App\Instanse;
+use App\TsClientWgAccount;
 
 class ClearOldDataControllers extends Controller {
 	function  list() {
-		foreach ( Instanse::with( 'servers.TsClientWgAccount' )->get() as $Instanse ) {
+		foreach ( Instanse::with( 'servers.TsClientWgAccount' )->get() as $Instance ) {
 			try {
-				$TeamSpeak = new TeamSpeak( $Instanse->id );
-				foreach ( $Instanse->servers as $server ) {
+				$TeamSpeak = new TeamSpeak( $Instance->id );
+				foreach ( $Instance->servers as $server ) {
 					try {
 						$TeamSpeak->ServerUseByUID( $server->uid );
 						foreach ( $server->TsClientWgAccount as $client ) {
@@ -24,6 +25,7 @@ class ClearOldDataControllers extends Controller {
 								$TeamSpeak->clientGetServerGroupsByUid( $client->client_uid );
 							} catch ( \TeamSpeak3_Adapter_ServerQuery_Exception $e ) {
 								echo '<pre>server uid ->' . $server->uid . ' uid->' . $client->client_uid . '  message->' . $e->getMessage() . '</pre>' . PHP_EOL;
+								TsClientWgAccount::find( $client->id )->delete();
 							}
 						}
 					} catch ( \Exception $e ) {

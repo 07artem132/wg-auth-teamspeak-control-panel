@@ -11,7 +11,11 @@
 |
 */
 
-Route::get( '/test/', [
+//Route::get( '/test/', [
+//	'uses' => 'ClearOldDataControllers@list',
+//] );
+
+Route::get( '/old/delete', [
 	'uses' => 'ClearOldDataControllers@list',
 ] );
 
