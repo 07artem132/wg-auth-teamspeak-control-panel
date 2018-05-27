@@ -21,21 +21,21 @@ class WN8 {
 
 	/**
 	 * @param integer $account_id ID аккаунта в танках
+	 * @param  bool $cache вернуть кешированный результат ?
 	 * @param integer $expected_tank_values_version Версия массива ожидаемых значений танков от wnefficiency.net (vBAddict.net)
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct( $account_id, $expected_tank_values_version = 30 ) {
+	public function __construct( $account_id, $cache = true, $expected_tank_values_version = 30 ) {
 		$this->account_id = $account_id;
 
 		$this->loadExpectedTankValues( $expected_tank_values_version );
-
-		$this->wn8 = Cache::remember( "wn8:" . $account_id, env( 'WN8_CACHE_TIME' ), function () {
-			return (float) $this->calculateWN8();
-		} );
-
-		if ( env( 'APP_DEBUG' ) ) {
-			echo $account_id.'->'.$this->wn8.PHP_EOL;
+		if ( $cache ) {
+			$this->wn8 = Cache::remember( "wn8:" . $account_id, env( 'WN8_CACHE_TIME' ), function () {
+				return (float) $this->calculateWN8();
+			} );
+		} else {
+			$this->wn8 = $this->calculateWN8();
 		}
 	}
 
@@ -154,11 +154,11 @@ class WN8 {
 		return (string) $this->wn8;
 	}
 
-	public function toFloat(): float {
+	public function __toFloat(): float {
 		return (float) $this->wn8;
 	}
 
-	public function toInt(): int {
+	public function __toInt(): int {
 		return (int) $this->wn8;
 	}
 

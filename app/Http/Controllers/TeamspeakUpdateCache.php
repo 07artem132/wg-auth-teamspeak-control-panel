@@ -15,7 +15,7 @@ class TeamspeakUpdateCache extends Controller {
 
 	function Cron() {
 		foreach ( Instanse::with( 'servers.TsClientWgAccount' )->get() as $Instanse ) {
-			$this->dispatch( new TeamspeakUpdateCacheJob( $Instanse->toArray() ) );
+			$this->dispatch( new TeamspeakUpdateCacheJob( $Instanse ) );
 		}
 	}
 }

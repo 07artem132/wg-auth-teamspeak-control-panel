@@ -9,7 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Cache;
-use Redis;
+use Illuminate\Support\Facades\Redis;
 
 class WN8UpdateCacheJob implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -30,8 +30,13 @@ class WN8UpdateCacheJob implements ShouldQueue {
 	 * @return void
 	 */
 	public function handle() {
-		if ( Redis::ttl( config( 'cache.prefix' ) . ":wn8:$this->accountID" ) < 600 || ! Cache::has( "wn8:$this->accountID" ) ) {
-			 new WN8( $this->accountID );
+		$redis       = Redis::connection();
+		$cacheKeyWn8 = Cache::getPrefix() . 'wn8:' . $this->accountID;
+		$ttl         = $redis->ttl( $cacheKeyWn8 );
+
+		if ( $ttl < 300 ) {
+			$wn8 = new WN8( $this->accountID, false );
+			$redis->set( $cacheKeyWn8, $wn8->__toInt(), 'EX', env( 'WN8_CACHE_TIME', 1440 ) * 60 );
 		}
 
 	}
