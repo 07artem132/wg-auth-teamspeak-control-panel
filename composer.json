@@ -9,6 +9,7 @@
         "barryvdh/laravel-debugbar": "^3.1",
         "barryvdh/laravel-ide-helper": "^2.4",
         "campo/random-user-agent": "^1.2",
+        "cesargb/laravel-logs-rotate": "^1.1",
         "doctrine/dbal": "^2.6",
         "fideloper/proxy": "~4.0",
         "guzzlehttp/guzzle": "^6.3",
