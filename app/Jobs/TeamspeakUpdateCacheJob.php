@@ -37,17 +37,17 @@ class TeamspeakUpdateCacheJob implements ShouldQueue {
 			foreach ( $this->instanses->servers as $server ) {
 				try {
 					$TeamSpeak->ServerUseByUID( $server->uid );
-					if ( !env( 'ALL_CLIENT_CACHE' ) ) {
+					if ( ! env( 'ALL_CLIENT_CACHE' ) ) {
 						foreach ( $TeamSpeak->ReturnConnection()->clientList() as $client ) {
 							if ( ! empty( $server->TsClientWgAccount->firstWhere( 'client_uid', '=', $client['client_unique_identifier'] ) ) ) {
 								$cacheKeyNick  = Cache::getPrefix() . "ts:{$this->instanses->id}:{$server->uid}:client:{$client['client_unique_identifier']}:nickname";
 								$cacheKeyGroup = Cache::getPrefix() . "ts:{$this->instanses->id}:{$server->uid}:group:{$client['client_unique_identifier']}";
 
-								if ( $redis->ttl( $cacheKeyNick ) < 15 ) {
+								if ( $redis->ttl( $cacheKeyNick ) < 20 ) {
 									$redis->set( $cacheKeyNick, serialize( (string) $client['client_nickname'] ), 'EX', env( 'CLIENT_NICKNAME_CACHE_TIME', 1 ) * 60 );
 								}
 
-								if ( $redis->ttl( $cacheKeyGroup ) < 15 ) {
+								if ( $redis->ttl( $cacheKeyGroup ) < 20 ) {
 									$clientServerGroups = $TeamSpeak->clientGetServerGroupsByUid( $client['client_unique_identifier'] );
 
 									array_walk( $clientServerGroups, function ( &$group, &$group_id ) {
@@ -68,19 +68,23 @@ class TeamspeakUpdateCacheJob implements ShouldQueue {
 								$cacheKeyNick  = Cache::getPrefix() . "ts:{$this->instanses->id}:{$server->uid}:client:{$client['client_unique_identifier']}:nickname";
 								$cacheKeyGroup = Cache::getPrefix() . "ts:{$this->instanses->id}:{$server->uid}:group:{$client['client_unique_identifier']}";
 
-								$redis->set( $cacheKeyNick, serialize( (string) $client['client_nickname'] ), 'EX', env( 'CLIENT_NICKNAME_CACHE_TIME', 1 ) * 60 );
+								if ( $redis->ttl( $cacheKeyNick ) < 20 ) {
+									$redis->set( $cacheKeyNick, serialize( (string) $client['client_nickname'] ), 'EX', env( 'CLIENT_NICKNAME_CACHE_TIME', 1 ) * 60 );
+								}
 
-								$clientServerGroups = $TeamSpeak->clientGetServerGroupsByUid( $client['client_unique_identifier'] );
+								if ( $redis->ttl( $cacheKeyGroup ) < 20 ) {
+									$clientServerGroups = $TeamSpeak->clientGetServerGroupsByUid( $client['client_unique_identifier'] );
 
-								array_walk( $clientServerGroups, function ( &$group, &$group_id ) {
-									array_walk( $group, function ( &$value, &$key ) {
-										if ( $value instanceof TeamSpeak3_Helper_String ) {
-											$value = (string) $value;
-										}
+									array_walk( $clientServerGroups, function ( &$group, &$group_id ) {
+										array_walk( $group, function ( &$value, &$key ) {
+											if ( $value instanceof TeamSpeak3_Helper_String ) {
+												$value = (string) $value;
+											}
+										} );
 									} );
-								} );
 
-								$redis->set( $cacheKeyGroup, serialize( $clientServerGroups ), 'EX', env( 'GROUP_CACHE_TIME', 1 ) * 60 );
+									$redis->set( $cacheKeyGroup, serialize( $clientServerGroups ), 'EX', env( 'GROUP_CACHE_TIME', 1 ) * 60 );
+								}
 							}
 						}
 					}

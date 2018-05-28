@@ -38,12 +38,12 @@ class Kernel extends ConsoleKernel {
 			$WN8 = new Wn8UpdateCache();
 			$WN8->Cron();
 		} )->everyMinute();
-		/*$schedule->call( function () {
+		$schedule->call( function () {
 		$WargamingUpdateCache = new WargamingUpdateCache();
 		$WargamingUpdateCache->Cron();
-		} )->everyMinute();*/
+		} )->everyMinute();
 
-		$schedule->call( function () {
+ 		$schedule->call( function () {
 			$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
 			$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
 		} )->everyMinute();
