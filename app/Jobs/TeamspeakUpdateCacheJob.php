@@ -5,6 +5,7 @@ namespace App\Jobs;
 use Log;
 use Cache;
 use App\Services\TeamSpeak;
+use TeamSpeak3_Helper_String;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

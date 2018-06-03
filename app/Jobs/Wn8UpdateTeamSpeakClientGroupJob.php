@@ -45,7 +45,7 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 									if ( array_key_exists( $client['wg_account']['account_id'], $clanInfo[ $clan['clan_id'] ]['members'] ) ) {
 										$clientGroup           = $this->GetClientGroup( $this->instanses['id'], $server['uid'], $client['client_uid'] );
 										$wn8                   = new WN8( $client['wg_account']['account_id'] );
-										$wn8                   = $wn8->toInt();
+										$wn8                   = $wn8->__toInt();
 										$ColumClientRank       = $this->wn8RatingToRankColumName( $wn8 );
 										$ColumClientRankRemove = $this->getAllColumName();
 
@@ -82,7 +82,7 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 									if ( $module['status'] == 'enable' && $module['module']['name'] == 'wot_players' ) {
 										$clientGroup           = $this->GetClientGroup( $this->instanses['id'], $server['uid'], $client['client_uid'] );
 										$wn8                   = new WN8( $client['wg_account']['account_id'] );
-										$wn8                   = $wn8->toInt();
+										$wn8                   = $wn8->__toInt();
 										$ColumClientRank       = $this->wn8RatingToRankColumName( $wn8 );
 										$ColumClientRankRemove = $this->getAllColumName();
 

@@ -54,10 +54,6 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 									$clientNicknameFilter = $clientNickname;
 								}
 
-								if ( env( 'APP_DEBUG' ) ) {
-									echo "TS_nickname->" . str_pad( $clientNicknameFilter, 60 ) . "WOT_nickname->" . str_pad( $playerNickname, 60 ) . PHP_EOL;
-								}
-
 								if ( $clientNicknameFilter != $playerNickname ) {
 									if ( array_key_exists( 'no_valid_nickname', $server ) && ! empty( $server['no_valid_nickname']['sg_id'] ) ) {
 										foreach ( $server['clans'] as $clan ) {
@@ -72,9 +68,6 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['no_valid_nickname']['sg_id'] );
-													if ( env( 'APP_DEBUG' ) ) {
-														echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['no_valid_nickname']['sg_id'];
-													}
 												}
 											} else {
 												foreach ( $server['modules'] as $module ) {
@@ -87,10 +80,6 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 															}
 															$TeamSpeak->ServerUseByUID( $server['uid'] );
 															$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['no_valid_nickname']['sg_id'] );
-															if ( env( 'APP_DEBUG' ) ) {
-																echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['no_valid_nickname']['sg_id'];
-															}
-
 														}
 													}
 												}
@@ -107,9 +96,6 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 											}
 											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['no_valid_nickname']['sg_id'] );
-											if ( env( 'APP_DEBUG' ) ) {
-												echo "client uid->" . $client['client_uid'] . " remove server group id->" . $server['no_valid_nickname']['sg_id'];
-											}
 										}
 									}
 								}
