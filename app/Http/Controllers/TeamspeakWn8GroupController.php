@@ -64,14 +64,12 @@ class TeamspeakWn8GroupController extends Controller {
 										$clientGroup = $this->GetClientGroup( $tsClientWgAccount->server->instanse_id, $tsClientWgAccount->server->uid, $tsClientWgAccount->client_uid );
 										$wn8         = new WN8( $tsClientWgAccount->wgAccount->account_id );
 										$wn8         = $wn8->__toInt();
-
 										$ColumClientRank       = $this->wn8RatingToRankColumName( $wn8 );
 										$ColumClientRankRemove = $this->getAllColumName();
-
 										$ColumClientRankRemove = array_flip( $ColumClientRankRemove );
 										unset( $ColumClientRankRemove[ $ColumClientRank ] );
 										$ColumClientRankRemove = array_flip( $ColumClientRankRemove );
-										if ( array_key_exists( $ColumClientRank, $tsClientWgAccount->server->wn8 ) ) {
+										if ( !empty($tsClientWgAccount->server->wn8->$ColumClientRank) ) {
 											if ( ! array_key_exists( $tsClientWgAccount->server->wn8->$ColumClientRank, $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount->client_uid, $tsClientWgAccount->server->wn8->$ColumClientRank );
 											}
