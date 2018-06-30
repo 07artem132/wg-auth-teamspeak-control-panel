@@ -16,33 +16,46 @@ use Cache;
 use App\Instanse;
 use Log;
 use App\Services\FastWargamingInfo;
+use App\Services\OpenID;
 
 class TeamSpeakUserAuth extends Controller {
 	use JsonDecodeAndValidate;
 
 	function RegistrationWgVerify( Request $request, $id ) {
-		$TeamSpeakWgAuth = new TeamSpeakWgAuth();
+		if ( ! isset( $_GET['openid_mode'] ) ) {
+			return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
+		}
 
+		$openid = new OpenID( env( 'APP_URL' ) );
+
+		if ( $openid->mode && $openid->mode == 'cancel' ) {
+			return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
+		}
+
+		$TeamSpeakWgAuth = new TeamSpeakWgAuth();
 		try {
 			$TsVerifyInfo = $this->JsonDecodeAndValidate( $TeamSpeakWgAuth->GetVerifyDataByID( $id ) );
 			cache::delete( "PendingVerify:$id" );
 		} catch ( InvalidJSON $e ) {
 			return response( 'Вероятно ссылка устарела...', 200 );
 		}
-		if ( $request->input( 'status' ) != 'ok' ) {
+		//if ( $request->input( 'status' ) != 'ok' ) {
+		if(!$openid->validate()){
 			return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
 		}
 		$TeamSpeakServer = server::uid( $TsVerifyInfo->server_uid )->firstOrFail();
 
-		$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
+		preg_match( '/id\/(\d+)-(\w{2,24})\/$/', $openid->identity, $matches );
+		$account_id = $matches[1];
+		//$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
 
 		try {
-			$WgAccounts = WgAccount::account_id( $WgUserInfo->account_id )->firstOrFail();
+			$WgAccounts = WgAccount::account_id( $account_id )->firstOrFail();
 		} catch ( ModelNotFoundException $e ) {
 			$WgAccounts                   = new WgAccount;
-			$WgAccounts->account_id       = $WgUserInfo->account_id;
-			$WgAccounts->token            = $WgUserInfo->access_token;
-			$WgAccounts->token_expires_at = date( 'Y-m-d H:i:s', $WgUserInfo->expires_at );
+			$WgAccounts->account_id       = $account_id;
+			$WgAccounts->token            = ' ';
+			$WgAccounts->token_expires_at = date( 'Y-m-d H:i:s' );
 			$WgAccounts->saveOrFail();
 		}
 
@@ -81,7 +94,10 @@ class TeamSpeakUserAuth extends Controller {
 	}
 
 	function Registration( $id ) {
-		$WargamingAPI = new TeamSpeakWgAuth();
+		$WargamingAPI      = new TeamSpeakWgAuth();
+		$openid            = new OpenID( env( 'APP_URL' ) );
+		$openid->identity  = 'http://ru.wargaming.net/id/';
+		$openid->returnUrl = env( 'APP_URL' ) . 'user/verify/' . $id . '/wg';;
 
 		try {
 			$this->JsonDecodeAndValidate( $WargamingAPI->GetVerifyDataByID( $id ) );
@@ -89,9 +105,9 @@ class TeamSpeakUserAuth extends Controller {
 			return response( '<h1>Вероятно ссылка устарела...</h1>', 200 );
 		}
 
-		$url = $WargamingAPI->genAuthUrl( env( 'APP_URL' ) . 'user/verify/' . $id . '/wg' );
-
-		return redirect( $url );
+		//	$url = $WargamingAPI->genAuthUrl( env( 'APP_URL' ) . 'user/verify/' . $id . '/wg' );
+		//	return redirect( $url );
+		return redirect( $openid->authUrl() );
 	}
 
 	function VerifyPrivilege( Request $request ) {
@@ -620,7 +636,7 @@ class TeamSpeakUserAuth extends Controller {
 							if ( array_key_exists( $clan['reservist'], $clientGroup ) ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['reservist'] );
 							}
-							if (  array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
+							if ( array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
 								$TeamSpeak->ClientRemoveServerGroup( $tsClientWgAccount['client_uid'], $clan['clan_tag'] );
 							}
 						}

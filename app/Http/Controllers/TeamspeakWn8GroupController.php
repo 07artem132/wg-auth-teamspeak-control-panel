@@ -24,7 +24,6 @@ class TeamspeakWn8GroupController extends Controller {
 	}
 
 	function UserChengeGroupUid( $uid ) {
-		$uid = base64_decode( $uid );
 		try {
 			$TeamSpeakWgAuth   = new TeamSpeakWgAuth();
 			$tsClientWgAccount = TsClientWgAccount::with( 'wgAccount', 'server.modules.module', 'server.wn8', 'server.TsClientWgAccount.wgAccount', 'server.clans' )->clientUID( $uid )->firstOrFail();

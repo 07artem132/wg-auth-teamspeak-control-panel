@@ -11,9 +11,9 @@
 |
 */
 
-Route::get( '/test/{uid}', [
+/*Route::get( '/test/{uid}', [
 	'uses' => 'TeamspeakWn8GroupController@UserChengeGroupUid',
-] );
+] );*/
 
 Route::get( '/old/delete', [
 	'uses' => 'ClearOldDataControllers@list',
