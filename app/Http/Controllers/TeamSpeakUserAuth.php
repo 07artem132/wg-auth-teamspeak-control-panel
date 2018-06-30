@@ -47,7 +47,7 @@ class TeamSpeakUserAuth extends Controller {
 
 		preg_match( '/id\/(\d+)-(\w{2,24})\/$/', $openid->identity, $matches );
 		$account_id = $matches[1];
-		//$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
+	//	$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
 
 		try {
 			$WgAccounts = WgAccount::account_id( $account_id )->firstOrFail();
@@ -90,7 +90,7 @@ class TeamSpeakUserAuth extends Controller {
 		$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
 		$TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
 
-		return response( '<h1>Авторизация прошла нормально</h1><br/><h1>Ваш ник <span style="color: red;">' . $_GET['nickname'] . '</span> если это не Ваш ник, то обратитесь к смотряшему за сервером</h1>', 200 );
+		return response( '<h1>Авторизация прошла нормально</h1><br/><h1>Ваш ник <span style="color: red;">' . $matches[2] . '</span> если это не Ваш ник, то обратитесь к смотряшему за сервером</h1>', 200 );
 	}
 
 	function Registration( $id ) {
