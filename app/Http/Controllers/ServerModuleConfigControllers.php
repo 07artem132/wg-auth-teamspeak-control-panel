@@ -24,6 +24,11 @@ use App\ServerNoValidNickname;
 use App\ServerWgAuthNotifyAuthSuccessGroup;
 
 class ServerModuleConfigControllers {
+	public function __construct()
+	{
+		$this->middleware('auth');
+	}
+
 	function ListModuleAdd( $id, $uid ) {
 		$module = module::all();
 		$module = $module->toArray();

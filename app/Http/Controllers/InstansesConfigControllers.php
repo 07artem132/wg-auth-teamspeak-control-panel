@@ -13,6 +13,11 @@ use App\Instanse;
 
 class InstansesConfigControllers {
 
+	public function __construct()
+	{
+		$this->middleware('auth');
+	}
+
 	function AddServer() {
 		return view( 'InstansesAdd');
 	}

@@ -10,6 +10,11 @@ use App\module;
 use App\ModuleOptions;
 
 class ServerConfigControllers extends Controller {
+	public function __construct()
+	{
+		$this->middleware('auth');
+	}
+
 	function AddServer( $id ) {
 		$instanses = Instanse::findOrFail( $id );
 

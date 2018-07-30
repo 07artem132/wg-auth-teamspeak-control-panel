@@ -70,9 +70,7 @@ class TeamspeakWn8GroupController extends Controller {
 										unset( $ColumClientRankRemove[ $ColumClientRank ] );
 										$ColumClientRankRemove = array_flip( $ColumClientRankRemove );
 										if ( !empty($tsClientWgAccount->server->wn8->$ColumClientRank) ) {
-											if ( ! array_key_exists( $tsClientWgAccount->server->wn8->$ColumClientRank, $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $tsClientWgAccount->client_uid, $tsClientWgAccount->server->wn8->$ColumClientRank );
-											}
 										}
 
 										foreach ( $ColumClientRankRemove as $item ) {

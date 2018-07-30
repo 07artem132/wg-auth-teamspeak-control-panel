@@ -15,6 +15,8 @@
 	'uses' => 'TeamspeakWn8GroupController@UserChengeGroupUid',
 ] );*/
 
+Auth::routes();
+
 Route::get( '/old/delete', [
 	'uses' => 'ClearOldDataControllers@list',
 ] );
