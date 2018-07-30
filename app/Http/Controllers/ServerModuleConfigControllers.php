@@ -23,7 +23,7 @@ use App\ServerWotPlayer;
 use App\ServerNoValidNickname;
 use App\ServerWgAuthNotifyAuthSuccessGroup;
 
-class ServerModuleConfigControllers {
+class ServerModuleConfigControllers extends Controller{
 	public function __construct()
 	{
 		$this->middleware('auth');

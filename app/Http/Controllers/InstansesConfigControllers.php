@@ -11,7 +11,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Instanse;
 
-class InstansesConfigControllers {
+class InstansesConfigControllers extends Controller{
 
 	public function __construct()
 	{
