@@ -44,7 +44,11 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 						foreach ( $server['ts_client_wg_account'] as $client ) {
 							try {
 								$clientNickname = $this->GetClientNickname( $this->instanses['id'], $server['uid'], $client['client_uid'] );
-								$playerNickname = $TeamSpeakWgAuth->getAccountInfo( $client['wg_account']['account_id'] )->{$client['wg_account']['account_id']}->nickname;
+								$accountInfo    = $TeamSpeakWgAuth->getAccountInfo( $client['wg_account']['account_id'] );
+								if ( ! array_key_exists( $client['wg_account']['account_id'], $accountInfo ) ) {
+									continue;
+								}
+								$playerNickname = $accountInfo->{$client['wg_account']['account_id']}->nickname;
 
 								preg_match_all( '/^(.*?)\s/', $clientNickname, $matches, PREG_SET_ORDER, 0 );
 

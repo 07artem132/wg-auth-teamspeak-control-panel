@@ -53,11 +53,12 @@ class WN8 {
 	}
 
 	protected function getUserSummary( $account_id ) {
-		return WargamingAPI::wot()->account->info( [
+		$statistics = WargamingAPI::wot()->account->info( [
 			'fields'     => 'statistics.all.battles,statistics.all.frags,statistics.all.damage_dealt,statistics.all.dropped_capture_points,statistics.all.spotted,statistics.all.wins',
 			'account_id' => $account_id
 		] )->{$account_id}->statistics->all;
 
+		return $statistics;
 	}
 
 	protected function getUserTanks( $account_id ) {
