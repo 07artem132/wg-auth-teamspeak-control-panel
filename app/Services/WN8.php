@@ -78,9 +78,12 @@ class WN8 {
 	}
 
 	protected function calculateWN8(): float {
-
-		$summary = $this->getUserSummary( $this->account_id );
-		$tanks   = $this->getUserTanks( $this->account_id );
+		try {
+			$summary = $this->getUserSummary( $this->account_id );
+		} catch ( \Exception $e ) {
+			return 0;
+		}
+		$tanks = $this->getUserTanks( $this->account_id );
 
 		// If this account has no tanks data skip calculation and return 0
 		if ( empty( $tanks ) ) {
