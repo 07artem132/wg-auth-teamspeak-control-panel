@@ -112,6 +112,8 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 									Log::error( '-------------------------' );
 									Log::error( 'wotID->' . $client['wg_account']['account_id'] );
 									Log::error( 'uid->' . $client['client_uid'] );
+									Log::error( $accountInfo);
+
 									if ( isset( $clientGroup ) ) {
 										Log::error( $clientGroup );
 									}
