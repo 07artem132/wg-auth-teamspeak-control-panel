@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Redis;
 class WN8UpdateCacheJob implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 	private $accountID;
+	public $timeout = 900;
 
 	/**
 	 * Create a new job instance.

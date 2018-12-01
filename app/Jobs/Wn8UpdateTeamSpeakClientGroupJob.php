@@ -16,6 +16,7 @@ use App\Traits\TeamSpeak3GetClientGroupTraits;
 class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TeamSpeak3GetClientGroupTraits;
 	private $instanses;
+	public $timeout = 900;
 
 	/**
 	 * Create a new job instance.
@@ -60,6 +61,10 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 												}
 												$TeamSpeak->ServerUseByUID( $server['uid'] );
 												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8'][ $ColumClientRank ] );
+												if ( env( 'APP_DEBUG' ) ) {
+													echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['wn8'][ $ColumClientRank ] . PHP_EOL;
+												}
+
 											}
 										}
 
@@ -71,6 +76,10 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8'][ $item ] );
+													if ( env( 'APP_DEBUG' ) ) {
+														echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['wn8'][ $item ] . PHP_EOL;
+													}
+
 												}
 											}
 										}
@@ -96,6 +105,9 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 												}
 												$TeamSpeak->ServerUseByUID( $server['uid'] );
 												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['wn8'][ $ColumClientRank ] );
+												if ( env( 'APP_DEBUG' ) ) {
+													echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['wn8'][ $ColumClientRank ] . PHP_EOL;
+												}
 											}
 										}
 
@@ -107,6 +119,9 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8'][ $item ] );
+													if ( env( 'APP_DEBUG' ) ) {
+														echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['wn8'][ $item ] . PHP_EOL;
+													}
 												}
 											}
 										}
@@ -125,6 +140,9 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 											}
 											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wn8'][ $item ] );
+											if ( env( 'APP_DEBUG' ) ) {
+												echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['wn8'][ $item ] . PHP_EOL;
+											}
 										}
 									}
 								}

@@ -44,8 +44,8 @@ class TeamSpeakWgAuth {
 
 	function clanInfo( $ClanID ) {
 		$data = Cache::remember( "clan:$ClanID", 5, function () use ( $ClanID ) {
-			return FastWargamingInfo::Clan( $ClanID );
-			#return WargamingAPI::wgn()->clans->info( [ 'clan_id' => $ClanID, 'members_key' => 'id' ] );
+			#return FastWargamingInfo::Clan( $ClanID );
+			return WargamingAPI::wgn()->clans->info( [ 'clan_id' => $ClanID, 'members_key' => 'id' ] );
 		} );
 
 		return $data;

@@ -19,6 +19,7 @@ use App\Traits\TeamSpeak3GetClientNicknameTraits;
 class TeamSpeakVerifyGameNickname implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TeamSpeak3GetClientGroupTraits, TeamSpeak3GetClientNicknameTraits;
 	private $instanses;
+	public $timeout = 900;
 
 	/**
 	 * Create a new job instance.
@@ -39,15 +40,26 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 			$TeamSpeak       = null;
 			$TeamSpeakWgAuth = new TeamSpeakWgAuth();
 			foreach ( $this->instanses['servers'] as $server ) {
+				if ( env( 'APP_DEBUG' ) ) {
+					echo "iteration server->" . $server['uid'] . PHP_EOL;
+				}
 				foreach ( $server['modules'] as $module ) {
 					if ( $module['status'] == 'enable' && $module['module']['name'] == 'verify_game_nickname' ) {
+						if ( env( 'APP_DEBUG' ) ) {
+							echo "module verify_game_nickname active" . PHP_EOL;
+						}
 						foreach ( $server['ts_client_wg_account'] as $client ) {
+							if ( env( 'APP_DEBUG' ) ) {
+								echo "iteration wg_account_id->" . $client['wg_account']['account_id'] . ' client_uid->' . $client['client_uid'] . PHP_EOL;
+							}
 							try {
 								$clientNickname = $this->GetClientNickname( $this->instanses['id'], $server['uid'], $client['client_uid'] );
 								$accountInfo    = $TeamSpeakWgAuth->getAccountInfo( $client['wg_account']['account_id'] );
-								if ( ! array_key_exists( $client['wg_account']['account_id'], $accountInfo ) ) {
+
+								if ( ! isset( $accountInfo->{$client['wg_account']['account_id']} ) || ! is_object( $accountInfo->{$client['wg_account']['account_id']} ) ) {
 									continue;
 								}
+
 								$playerNickname = $accountInfo->{$client['wg_account']['account_id']}->nickname;
 
 								preg_match_all( '/^(.*?)\s/', $clientNickname, $matches, PREG_SET_ORDER, 0 );
@@ -72,6 +84,10 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['no_valid_nickname']['sg_id'] );
+													if ( env( 'APP_DEBUG' ) ) {
+														echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['no_valid_nickname']['sg_id'] . PHP_EOL;
+													}
+
 												}
 											} else {
 												foreach ( $server['modules'] as $module ) {
@@ -84,6 +100,10 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 															}
 															$TeamSpeak->ServerUseByUID( $server['uid'] );
 															$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $server['no_valid_nickname']['sg_id'] );
+															if ( env( 'APP_DEBUG' ) ) {
+																echo "client uid->" . $client['client_uid'] . " add to server group id->" . $server['no_valid_nickname']['sg_id'] . PHP_EOL;
+															}
+
 														}
 													}
 												}
@@ -100,6 +120,10 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 											}
 											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['no_valid_nickname']['sg_id'] );
+											if ( env( 'APP_DEBUG' ) ) {
+												echo "client uid->" . $client['client_uid'] . " remove from server group id->" . $server['no_valid_nickname']['sg_id'] . PHP_EOL;
+											}
+
 										}
 									}
 								}
@@ -112,7 +136,7 @@ class TeamSpeakVerifyGameNickname implements ShouldQueue {
 									Log::error( '-------------------------' );
 									Log::error( 'wotID->' . $client['wg_account']['account_id'] );
 									Log::error( 'uid->' . $client['client_uid'] );
-									Log::error( $accountInfo);
+									Log::error( $accountInfo );
 
 									if ( isset( $clientGroup ) ) {
 										Log::error( $clientGroup );

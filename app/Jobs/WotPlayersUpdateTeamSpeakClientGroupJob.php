@@ -16,6 +16,7 @@ class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TeamSpeak3GetClientGroupTraits;
 
 	private $instanses;
+	public $timeout = 900;
 
 	/**
 	 * Create a new job instance.
@@ -51,6 +52,10 @@ class WotPlayersUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 											}
 											$TeamSpeak->ServerUseByUID( $server['uid'] );
 											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $server['wot_players']['sg_id'] );
+											if ( env( 'APP_DEBUG' ) ) {
+												echo "client uid->" . $client['client_uid'] . " remove from server group id->" . $server['wot_players']['sg_id'].PHP_EOL;
+											}
+
 											continue 2;
 										}
 										continue 2;

@@ -83,7 +83,12 @@ class WN8 {
 		} catch ( \Exception $e ) {
 			return 0;
 		}
-		$tanks = $this->getUserTanks( $this->account_id );
+
+		try {
+			$tanks = $this->getUserTanks( $this->account_id );
+		} catch ( \Exception $e ) {
+			return 0;
+		}
 
 		// If this account has no tanks data skip calculation and return 0
 		if ( empty( $tanks ) ) {

@@ -13,6 +13,7 @@ use App\Instanse;
 use TeamSpeak3_Node_Servergroup;
 use App\server;
 use Cache;
+use TeamSpeak3_Adapter_ServerQuery_Exception;
 
 class TeamSpeak {
 	private $ts3conn, $InstanceConfig, $latestUidSelect = null;
@@ -60,7 +61,14 @@ class TeamSpeak {
 	}
 
 	function ClientMemberOfServerGroupId( $ClientUID, $SGID ) {
-		$cldbid                = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		try {
+			$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		} catch ( TeamSpeak3_Adapter_ServerQuery_Exception $e ) {
+			var_dump( 'Рекомендуется удалить uid клиента из бд: ' . $ClientUID );
+			throw new  TeamSpeak3_Adapter_ServerQuery_Exception( $e->getMessage() );
+
+		}
+
 		$ServerGroupClientList = $this->ts3conn->serverGroupClientList( $SGID );
 
 		if ( array_key_exists( $cldbid, $ServerGroupClientList ) ) {
@@ -71,11 +79,23 @@ class TeamSpeak {
 	}
 
 	function ClientAddServerGroup( $ClientUID, $sgid ) {
+		$cache = Cache::get( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID" );
+		try {
+			$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		} catch ( TeamSpeak3_Adapter_ServerQuery_Exception $e ) {
+			var_dump( 'Рекомендуется удалить uid клиента из бд: ' . $ClientUID );
+			throw new  TeamSpeak3_Adapter_ServerQuery_Exception( $e->getMessage() );
+		}
+		try {
+			$this->ts3conn->serverGroupClientAdd( $sgid, $cldbid );
+		} catch ( TeamSpeak3_Adapter_ServerQuery_Exception $e ) {
+			if ( $e->getMessage() === 'duplicate entry' ) {
+				$cache[ $sgid ] = [ 'ClientAddedGroupTimestamp' => microtime( true ) ];
+				Cache::put( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID", $cache, env( 'GROUP_CACHE_TIME' ) );
 
-		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
-		$this->ts3conn->serverGroupClientAdd( $sgid, $cldbid );
-
-		$cache          = Cache::get( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID" );
+				return;
+			}
+		}
 		$cache[ $sgid ] = [ 'ClientAddedGroupTimestamp' => microtime( true ) ];
 		Cache::put( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID", $cache, env( 'GROUP_CACHE_TIME' ) );
 	}
@@ -87,8 +107,25 @@ class TeamSpeak {
 	}
 
 	function ClientRemoveServerGroup( $ClientUID, $sgid ) {
-		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
-		$this->ts3conn->serverGroupClientDel( $sgid, $cldbid );
+		try {
+			$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		} catch ( TeamSpeak3_Adapter_ServerQuery_Exception $e ) {
+			var_dump( 'Рекомендуется удалить uid клиента из бд: ' . $ClientUID );
+			throw new  TeamSpeak3_Adapter_ServerQuery_Exception( $e->getMessage() );
+
+		}
+
+		try {
+			$this->ts3conn->serverGroupClientDel( $sgid, $cldbid );
+		} catch ( TeamSpeak3_Adapter_ServerQuery_Exception $e ) {
+			if ( $e->getMessage() === 'empty result set' ) {
+				$cache = Cache::get( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID" );
+				unset( $cache[ $sgid ] );
+				Cache::put( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID", $cache, env( 'GROUP_CACHE_TIME' ) );
+
+				return;
+			}
+		}
 
 		$cache = Cache::get( "ts:{$this->InstanceConfig->id}:$this->latestUidSelect:group:$ClientUID" );
 		unset( $cache[ $sgid ] );
@@ -96,7 +133,13 @@ class TeamSpeak {
 	}
 
 	function clientGetServerGroupsByUid( $ClientUID ) {
-		$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		try {
+			$cldbid = $this->ts3conn->clientFindDb( $ClientUID, true )[0];
+		} catch ( TeamSpeak3_Adapter_ServerQuery_Exception $e ) {
+			var_dump( 'Рекомендуется удалить uid клиента из бд: ' . $ClientUID );
+			throw new  TeamSpeak3_Adapter_ServerQuery_Exception( $e->getMessage() );
+		}
+
 
 		return $this->ts3conn->clientGetServerGroupsByDbid( $cldbid );
 	}

@@ -14,6 +14,7 @@ use Redis;
 class WargamingUpdateCacheJob implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 	private $accountID;
+	public $timeout = 900;
 
 	/**
 	 * Create a new job instance.

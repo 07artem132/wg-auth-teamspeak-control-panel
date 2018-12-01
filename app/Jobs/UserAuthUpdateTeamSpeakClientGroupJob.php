@@ -17,6 +17,7 @@ use App\Traits\TeamSpeak3GetClientGroupTraits;
 class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TeamSpeak3GetClientGroupTraits;
 	private $instanses;
+	public $timeout = 900;
 
 	/**
 	 * Create a new job instance.
@@ -60,6 +61,10 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $clan[ $ColumClientRank ] );
+													if ( env( 'APP_DEBUG' ) ) {
+														echo "client uid->" . $client['client_uid'] . " add to server group id->" . $clan[ $ColumClientRank ] . PHP_EOL;
+													}
+
 												}
 											}
 
@@ -71,6 +76,10 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 														}
 														$TeamSpeak->ServerUseByUID( $server['uid'] );
 														$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan[ $item ] );
+														if ( env( 'APP_DEBUG' ) ) {
+															echo "client uid->" . $client['client_uid'] . " remove from server group id->" . $clan[ $item ] . PHP_EOL;
+														}
+
 													}
 												}
 											}
@@ -78,6 +87,10 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 
 											if ( ! array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
 												$TeamSpeak->ClientAddServerGroup( $client['client_uid'], $clan['clan_tag'] );
+												if ( env( 'APP_DEBUG' ) ) {
+													echo "client uid->" . $client['client_uid'] . " add to server group id->" . $clan['clan_tag'] . PHP_EOL;
+												}
+
 											}
 											continue 2;
 										}
@@ -98,11 +111,18 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 													}
 													$TeamSpeak->ServerUseByUID( $server['uid'] );
 													$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan[ $item ] );
+													if ( env( 'APP_DEBUG' ) ) {
+														echo "client uid->" . $client['client_uid'] . " remove from server group id->" . $clan[ $item ] . PHP_EOL;
+													}
+
 												}
 											}
 										}
 										if ( array_key_exists( $clan['clan_tag'], $clientGroup ) ) {
 											$TeamSpeak->ClientRemoveServerGroup( $client['client_uid'], $clan['clan_tag'] );
+											if ( env( 'APP_DEBUG' ) ) {
+												echo "client uid->" . $client['client_uid'] . " remove from server group id->" . $clan['clan_tag'] . PHP_EOL;
+											}
 										}
 									}
 								}

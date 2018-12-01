@@ -15,6 +15,7 @@ use App\Services\FastWargamingInfo;
 class WargamingClanInfoUpdateCacheJob implements ShouldQueue {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 	private $clanID;
+	public $timeout = 900;
 
 	/**
 	 * Create a new job instance.

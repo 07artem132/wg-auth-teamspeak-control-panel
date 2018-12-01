@@ -20,6 +20,9 @@ Auth::routes();
 Route::get( '/old/delete', [
 	'uses' => 'ClearOldDataControllers@list',
 ] );
+Route::get( '/test', [
+	'uses' => 'ClearOldDataControllers@test',
+] );
 
 Route::get( '/', function () {
 	return view( 'welcome' );

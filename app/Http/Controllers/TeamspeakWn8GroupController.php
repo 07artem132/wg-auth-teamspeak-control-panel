@@ -26,6 +26,7 @@ class TeamspeakWn8GroupController extends Controller {
 	function UserChengeGroupUid( $uid ) {
 		try {
 			$TeamSpeakWgAuth   = new TeamSpeakWgAuth();
+			$TeamSpeak       = null;
 			$tsClientWgAccount = TsClientWgAccount::with( 'wgAccount', 'server.modules.module', 'server.wn8', 'server.TsClientWgAccount.wgAccount', 'server.clans' )->clientUID( $uid )->firstOrFail();
 			foreach ( $tsClientWgAccount->server->modules as $module ) {
 				if ( $module->status == 'enable' && $module->module->name == 'wn8' ) {
