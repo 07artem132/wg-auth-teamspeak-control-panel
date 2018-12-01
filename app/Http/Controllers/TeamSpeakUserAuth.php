@@ -22,15 +22,15 @@ class TeamSpeakUserAuth extends Controller {
 	use JsonDecodeAndValidate;
 
 	function RegistrationWgVerify( Request $request, $id ) {
-		if ( ! isset( $_GET['openid_mode'] ) ) {
-			return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
-		}
+		//	if ( ! isset( $_GET['openid_mode'] ) ) {
+		//		return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
+		//	}
 
-		$openid = new OpenID( env( 'APP_URL' ) );
+		//	$openid = new OpenID( env( 'APP_URL' ) );
 
-		if ( $openid->mode && $openid->mode == 'cancel' ) {
-			return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
-		}
+		//	if ( $openid->mode && $openid->mode == 'cancel' ) {
+		//		return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
+		//	}
 
 		$TeamSpeakWgAuth = new TeamSpeakWgAuth();
 		try {
@@ -39,16 +39,16 @@ class TeamSpeakUserAuth extends Controller {
 		} catch ( InvalidJSON $e ) {
 			return response( 'Вероятно ссылка устарела...', 200 );
 		}
-		//if ( $request->input( 'status' ) != 'ok' ) {
-		if(!$openid->validate()){
+		if ( $request->input( 'status' ) != 'ok' ) {
+			//	if(!$openid->validate()){
 			return response( 'На стороне вг что-то пошло не так, возможно вы отменили авторизацию', 200 );
 		}
 		$TeamSpeakServer = server::uid( $TsVerifyInfo->server_uid )->firstOrFail();
 
-		preg_match( '/id\/(\d+)-(\w{2,24})\/$/', $openid->identity, $matches );
-		$account_id = $matches[1];
-	//	$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
-
+		//preg_match( '/id\/(\d+)-(\w{2,24})\/$/', $openid->identity, $matches );
+		//$account_id = $matches[1];
+		$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
+		dd( $WgUserInfo );
 		try {
 			$WgAccounts = WgAccount::account_id( $account_id )->firstOrFail();
 		} catch ( ModelNotFoundException $e ) {
