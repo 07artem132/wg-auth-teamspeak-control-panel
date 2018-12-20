@@ -48,12 +48,12 @@ class TeamSpeakUserAuth extends Controller {
 		//preg_match( '/id\/(\d+)-(\w{2,24})\/$/', $openid->identity, $matches );
 		//$account_id = $matches[1];
 		$WgUserInfo = $TeamSpeakWgAuth->prolongateToken( $request->input( 'access_token' ) );
-		dd( $WgUserInfo );
+
 		try {
-			$WgAccounts = WgAccount::account_id( $account_id )->firstOrFail();
+			$WgAccounts = WgAccount::account_id( $WgUserInfo->account_id )->firstOrFail();
 		} catch ( ModelNotFoundException $e ) {
 			$WgAccounts                   = new WgAccount;
-			$WgAccounts->account_id       = $account_id;
+			$WgAccounts->account_id       = $WgUserInfo->account_id;
 			$WgAccounts->token            = ' ';
 			$WgAccounts->token_expires_at = date( 'Y-m-d H:i:s' );
 			$WgAccounts->saveOrFail();
@@ -66,38 +66,39 @@ class TeamSpeakUserAuth extends Controller {
 		$TsClientWgAccount->saveOrFail();
 
 
-		foreach ( $TeamSpeakServer->clans as $clan ) {
-			$ClanInfo = FastWargamingInfo::Clan( $clan->clan_id );
-			Cache::put( "clan:$clan->clan_id", $ClanInfo, 30 );
-
-			if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$TsClientWgAccount->wgAccount->account_id}->role ) ) {
-				$this->UserChengeGroupUid( $TsVerifyInfo->client_uid );
-				$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
-				$TeamspeakWn8GroupController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
-				$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
-				$TeamspeakVerifyGameNicknameController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
-				$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
-				$TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
-
-				return response( '<h1>авторизация прошла нормально</h1>', 200 );
-			}
-		}
-		$this->UserChengeGroupUid( $TsVerifyInfo->client_uid );
-		$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
-		$TeamspeakWn8GroupController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
-		$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
-		$TeamspeakVerifyGameNicknameController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
-		$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
-		$TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
-
-		return response( '<h1>Авторизация прошла нормально</h1><br/><h1>Ваш ник <span style="color: red;">' . $matches[2] . '</span> если это не Ваш ник, то обратитесь к смотряшему за сервером</h1>', 200 );
+		/**
+		 *        foreach ( $TeamSpeakServer->clans as $clan ) {
+		 * $ClanInfo = FastWargamingInfo::Clan( $clan->clan_id );
+		 * Cache::put( "clan:$clan->clan_id", $ClanInfo, 30 );
+		 *
+		 * if ( ! empty( $ClanInfo->{$clan->clan_id}->members->{$TsClientWgAccount->wgAccount->account_id}->role ) ) {
+		 * $this->UserChengeGroupUid( $TsVerifyInfo->client_uid );
+		 * $TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+		 * $TeamspeakWn8GroupController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
+		 * $TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
+		 * $TeamspeakVerifyGameNicknameController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
+		 * $TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
+		 * $TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
+		 *
+		 * return response( '<h1>авторизация прошла нормально</h1>', 200 );
+		 * }
+		 * }
+		 * $this->UserChengeGroupUid( $TsVerifyInfo->client_uid );
+		 * $TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+		 * $TeamspeakWn8GroupController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
+		 * $TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
+		 * $TeamspeakVerifyGameNicknameController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
+		 * $TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
+		 * $TeamSpeakWotPlayersController->UserChengeGroupUid( $TsVerifyInfo->client_uid );
+		 */
+		return response( '<h1>Авторизация прошла нормально</h1><br/><h1>Ваш ник <span style="color: red;">' . $_GET['nickname'] . '</span> если это не Ваш ник, то обратитесь к смотряшему за сервером</h1>', 200 );
 	}
 
 	function Registration( $id ) {
-		$WargamingAPI      = new TeamSpeakWgAuth();
-		$openid            = new OpenID( env( 'APP_URL' ) );
-		$openid->identity  = 'http://ru.wargaming.net/id/';
-		$openid->returnUrl = env( 'APP_URL' ) . 'user/verify/' . $id . '/wg';;
+		$WargamingAPI = new TeamSpeakWgAuth();
+//		$openid            = new OpenID( env( 'APP_URL' ) );
+//		$openid->identity  = 'http://ru.wargaming.net/id/';
+//		$openid->returnUrl = env( 'APP_URL' ) . 'user/verify/' . $id . '/wg';;
 
 		try {
 			$this->JsonDecodeAndValidate( $WargamingAPI->GetVerifyDataByID( $id ) );
@@ -105,9 +106,10 @@ class TeamSpeakUserAuth extends Controller {
 			return response( '<h1>Вероятно ссылка устарела...</h1>', 200 );
 		}
 
-		//	$url = $WargamingAPI->genAuthUrl( env( 'APP_URL' ) . 'user/verify/' . $id . '/wg' );
-		//	return redirect( $url );
-		return redirect( $openid->authUrl() );
+		$url = $WargamingAPI->genAuthUrl( env( 'APP_URL' ) . 'user/verify/' . $id . '/wg' );
+
+		return redirect( $url );
+		//	return redirect( $openid->authUrl() );
 	}
 
 	function VerifyPrivilege( Request $request ) {

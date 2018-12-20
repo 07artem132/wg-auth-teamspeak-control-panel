@@ -30,14 +30,16 @@ class Kernel extends ConsoleKernel {
 	 * @return void
 	 */
 	protected function schedule( Schedule $schedule ) {
-		$schedule->call( function () {
+	 	$schedule->call( function () {
 			$TeamspeakUpdateCache = new TeamspeakUpdateCache();
 			$TeamspeakUpdateCache->Cron();
 		} )->everyMinute();
+
 		$schedule->call( function () {
 			$WN8 = new Wn8UpdateCache();
 			$WN8->Cron();
 		} )->everyMinute();
+
 		$schedule->call( function () {
 		$WargamingUpdateCache = new WargamingUpdateCache();
 		$WargamingUpdateCache->Cron();
@@ -47,14 +49,17 @@ class Kernel extends ConsoleKernel {
 			$TeamspeakVerifyGameNicknameController = new TeamspeakVerifyGameNicknameController();
 			$TeamspeakVerifyGameNicknameController->UserChengeGroupCron();
 		} )->everyMinute();
-		$schedule->call( function () {
-			$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
-			$TeamspeakWn8GroupController->UserChengeGroupCron();
-		} )->everyMinute();
+
 		$schedule->call( function () {
 			$TeamSpeakWotPlayersController = new TeamSpeakWotPlayersController();
 			$TeamSpeakWotPlayersController->UserChengeGroupCron();
 		} )->everyMinute();
+
+		$schedule->call( function () {
+			$TeamspeakWn8GroupController = new TeamspeakWn8GroupController();
+			$TeamspeakWn8GroupController->UserChengeGroupCron();
+		} )->everyMinute();
+
 		$schedule->call( function () {
 			$TeamSpeakUserAuth = new TeamSpeakUserAuth();
 			$TeamSpeakUserAuth->UserChengeGroupCron();

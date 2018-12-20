@@ -43,7 +43,7 @@ class Wn8UpdateTeamSpeakClientGroupJob implements ShouldQueue {
 							try {
 								foreach ( $server['clans'] as $clan ) {
 									$clanInfo = $TeamSpeakWgAuth->clanInfo( $clan['clan_id'] );
-									if ( array_key_exists( $client['wg_account']['account_id'], $clanInfo[ $clan['clan_id'] ]['members'] ) ) {
+									if ( property_exists( $clanInfo->{$clan['clan_id']}->members, $client['wg_account']['account_id'] ) ) {
 										$clientGroup           = $this->GetClientGroup( $this->instanses['id'], $server['uid'], $client['client_uid'] );
 										$wn8                   = new WN8( $client['wg_account']['account_id'] );
 										$wn8                   = $wn8->__toInt();

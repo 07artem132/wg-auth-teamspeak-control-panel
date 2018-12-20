@@ -46,8 +46,8 @@ class UserAuthUpdateTeamSpeakClientGroupJob implements ShouldQueue {
 									$clientGroup = $this->GetClientGroup( $this->instanses['id'], $server['uid'], $client['client_uid'] );
 									foreach ( $server['clans'] as $clan ) {
 										$clanInfo = $TeamSpeakWgAuth->clanInfo( $clan['clan_id'] );
-										if ( array_key_exists( $client['wg_account']['account_id'], $clanInfo[ $clan['clan_id'] ]['members'] ) ) {
-											$ColumClientRank       = $clanInfo[ $clan['clan_id'] ]['members'][ $client['wg_account']['account_id'] ]['role'];
+										if ( property_exists( $clanInfo->{$clan['clan_id']}->members, $client['wg_account']['account_id'] ) ) {
+											$ColumClientRank       = $clanInfo->{$clan['clan_id']}->members->{$client['wg_account']['account_id']}->role;
 											$ColumClientRankRemove = $this->getAllColumName();
 
 											$ColumClientRankRemove = array_flip( $ColumClientRankRemove );
